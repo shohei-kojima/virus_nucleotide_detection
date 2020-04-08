@@ -1,0 +1,6 @@
+# ignore
+.*
+__pycache__
+result_out/
+test_data/
+!.gitignore
