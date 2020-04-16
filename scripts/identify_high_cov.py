@@ -83,7 +83,7 @@ def identify_high_cov_virus_from_bedgraph(args, params, filenames):
                 ax.text(0, ymax, la, ha='left', va='top')
             plt.suptitle('%s' % sample_id)
             plt.savefig('%s_high_coverage_viruses.pdf' % sample_id)
-
+        
         
     except:
         log.logger.error('\n'+ traceback.format_exc())
