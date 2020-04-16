@@ -59,17 +59,17 @@ def check(args, argv):
         import pysam
         
         # check file paths
-        if os.path.exists(args.ht2db +'.1.ht2') is False:
+        if os.path.exists(args.ht2index +'.1.ht2') is False:
             log.logger.error('hisat2 index (%s) was not found.' % args.ht2db)
             exit(1)
         if os.path.exists(args.fa) is False:
             log.logger.error('Reference genome (%s) was not found.' % args.fa)
             exit(1)
-        if args.c is True:
+        if args.c is not None:
             if os.path.exists(args.c) is False:
                 log.logger.error('CRAM file (%s) was not found.' % args.c)
                 exit(1)
-        elif args.b is True:
+        elif args.b is not None:
             if os.path.exists(args.b) is False:
                 log.logger.error('BAM file (%s) was not found.' % args.b)
                 exit(1)

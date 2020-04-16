@@ -14,8 +14,10 @@ class load:
         log.logger.debug('started')
         try:
             # default
-            self.discordant_reads_clip_len=20
-            
+            self.gzip_compresslevel=1
+            self.bedgraph_bin=100
+            self.read_cov_threshold=3
+            self.genome_cov_thresholds=0.05
             
             params_for_debug=[]
             for k,v in self.__dict__.items():

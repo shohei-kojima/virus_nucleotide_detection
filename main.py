@@ -23,8 +23,10 @@ parser=argparse.ArgumentParser(description='')
 parser.add_argument('-b', metavar='str', type=str, help='Either -b or -c is Required. Specify input mapped paired-end BAM file.')  # , required=True
 parser.add_argument('-c', metavar='str', type=str, help='Either -b or -c is Required. Specify input mapped paired-end CRAM file.')  # , required=True
 parser.add_argument('-fa', metavar='str', type=str, help='Required. Specify reference genome which are used when input reads were mapped. Example: GRCh38DH.fa')
-parser.add_argument('-ht2db', metavar='str', type=str, help='Required. Specify hisat2 index of virus genomes, including HHV-6A and B. Example: viral_genomic_200405')
+parser.add_argument('-vref', metavar='str', type=str, help='Required. Specify reference of virus genomes, including HHV-6A and B. Example: viral_genomic_200405.fa')
+parser.add_argument('-ht2index', metavar='str', type=str, help='Required. Specify hisat2 index of virus genomes, including HHV-6A and B. Example: viral_genomic_200405')
 parser.add_argument('-outdir', metavar='str', type=str, help='Optional. Specify output directory. Default: ./result_out', default='./result_out')
+parser.add_argument('-keep', help='Optional. Specify if you do not want to delete temporary files.', action='store_true')
 parser.add_argument('-p', metavar='int', type=int, help='Optional. Number of threads. 4 is recommended. Default: 1', default=1)
 args=parser.parse_args()
 
@@ -61,13 +63,37 @@ params=setup.params
 import utils
 filenames=utils.empclass()
 
-filenames.repdb           =os.path.join(args.outdir, 'repdb')
+filenames.unmapped_1          =os.path.join(args.outdir, 'unmapped_1.fq')
+filenames.unmapped_2          =os.path.join(args.outdir, 'unmapped_2.fq')
+filenames.unmapped_3          =os.path.join(args.outdir, 'unmapped_3.fq')
+filenames.unmapped_4          =os.path.join(args.outdir, 'unmapped_4.fq')
+filenames.unmapped_5          =os.path.join(args.outdir, 'unmapped_5.fq')
+filenames.unmapped_6          =os.path.join(args.outdir, 'unmapped_6.fq')
+filenames.unmapped_merged_1   =os.path.join(args.outdir, 'unmapped_merged_1.fq')
+filenames.unmapped_merged_2   =os.path.join(args.outdir, 'unmapped_merged_2.fq')
+filenames.mapped_to_virus_bam =os.path.join(args.outdir, 'mapped_to_virus_sorted.bam')
+filenames.mapped_to_virus_bai =os.path.join(args.outdir, 'mapped_to_virus_sorted.bai')
+filenames.bedgraph            =os.path.join(args.outdir, 'mapped_to_virus.bedgraph')
 
 
 # 0. Unmapped read retrieval
 import retrieve_unmapped
-    log.logger.info('Unmapped read retrieval started.')
-    retrieve_unmapped(args, filenames)
+log.logger.info('Unmapped read retrieval started.')
+retrieve_unmapped.retrieve_unmapped_reads(args, params, filenames)
+
+# 1. mapping
+import mapping
+log.logger.info('Unmapped read retrieval started.')
+mapping.map_to_viruses(args, filenames)
+utils.gzip_or_del(args, params, filenames.unmapped_merged_1)
+utils.gzip_or_del(args, params, filenames.unmapped_merged_2)
+mapping.bam_to_bedgraph(args, params, filenames)
+
+# 2. identify high coverage viruses
+import identify_high_cov
+identify_high_cov.identify_high_cov_virus_from_bedgraph(args, params, filenames)
+
+
 
 
 # 7. search for absent MEs
