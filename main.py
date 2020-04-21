@@ -75,6 +75,10 @@ filenames.mapped_to_virus_bam =os.path.join(args.outdir, 'mapped_to_virus_sorted
 filenames.mapped_to_virus_bai =os.path.join(args.outdir, 'mapped_to_virus_sorted.bai')
 filenames.bedgraph            =os.path.join(args.outdir, 'mapped_to_virus.bedgraph')
 
+filenames.tmp_bam             =os.path.join(args.outdir, 'tmp.bam')
+filenames.tmp_fa              =os.path.join(args.outdir, 'tmp.fa')
+filenames.hhv6a_pileup_naive  =os.path.join(args.outdir, 'hhv6a_piled.fa')
+
 
 # 0. Unmapped read retrieval
 import retrieve_unmapped
@@ -94,7 +98,9 @@ import identify_high_cov
 identify_high_cov.identify_high_cov_virus_from_bedgraph(args, params, filenames)
 
 # 3. reconstruct HHV-6
-
+import reconstruct_hhv6
+if identify_high_cov.hhv6a_highcov is True:
+    reconstruct_hhv6.pileup(args, params, filenames)
 
 
 

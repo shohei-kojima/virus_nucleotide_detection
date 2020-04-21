@@ -53,7 +53,12 @@ def identify_high_cov_virus_from_bedgraph(args, params, filenames):
             for_plot_d[prev_id]=tmp_retain
         if len(high_cov) >= 1:
             log.logger.debug('high_cov_virus=%s' % ';'.join(high_cov))
-        
+        global hhv6a_highcov
+        global hhv6b_highcov
+        high_cov_set=set(high_cov)
+        hhv6a_highcov=True if 'NC_001664.4' in high_cov_set else False
+        hhv6b_highcov=True if 'NC_000898.1' in high_cov_set else False
+
         if len(for_plot_d) >= 1:
             # load virus names from virus reference seq file
             virus_names={}
