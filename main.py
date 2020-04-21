@@ -20,6 +20,11 @@ python main.py -overwrite -unmappedin -unmap1 ./test_data/unmapped_merged_1.fq -
 version='2020/04/21'
 
 
+# HHV-6 refseq IDs
+hhv6a_refid='NC_001664.4'
+hhv6b_refid='NC_000898.1'
+
+
 # args
 parser=argparse.ArgumentParser(description='')
 parser.add_argument('-alignmentin', help='Optional. Specify if you use BAM/CRAM file for input. You also need to specify either -b or -c.', action='store_true')
@@ -81,9 +86,12 @@ filenames.unmapped_merged_2   =os.path.join(args.outdir, 'unmapped_merged_2.fq')
 filenames.mapped_to_virus_bam =os.path.join(args.outdir, 'mapped_to_virus_sorted.bam')
 filenames.mapped_to_virus_bai =os.path.join(args.outdir, 'mapped_to_virus_sorted.bai')
 filenames.bedgraph            =os.path.join(args.outdir, 'mapped_to_virus.bedgraph')
+filenames.high_cov_pdf        =os.path.join(args.outdir, 'high_coverage_viruses.pdf')
 
 filenames.tmp_bam             =os.path.join(args.outdir, 'tmp.bam')
 filenames.tmp_fa              =os.path.join(args.outdir, 'tmp.fa')
+filenames.hhv6a_vcf_gz        =os.path.join(args.outdir, 'hhv6a.vcf.gz')
+filenames.hhv6a_norm_vcf_gz   =os.path.join(args.outdir, 'hhv6a_norm.vcf.gz')
 filenames.hhv6a_pileup_naive  =os.path.join(args.outdir, 'hhv6a_piled.fa')
 
 
@@ -105,43 +113,18 @@ if args.alignmentin is True:
     utils.gzip_or_del(args, params, filenames.unmapped_merged_1)
     utils.gzip_or_del(args, params, filenames.unmapped_merged_2)
 log.logger.info('BAM to bedgraph conversion started.')
-mapping.bam_to_bedgraph(args, params, filenames)
+#mapping.bam_to_bedgraph(args, params, filenames)
 
 # 2. identify high coverage viruses
 import identify_high_cov
 log.logger.info('Identification of high-coverage viruses started.')
 identify_high_cov.identify_high_cov_virus_from_bedgraph(args, params, filenames)
 
+exit()
+
 # 3. reconstruct HHV-6
 import reconstruct_hhv6
 if identify_high_cov.hhv6a_highcov is True:
-    log.logger.info('HHV-6 sequence reconstruction started.')
-    reconstruct_hhv6.pileup(args, params, filenames)
+    log.logger.info('HHV-6A sequence reconstruction started.')
+    reconstruct_hhv6.pileup(args, params, filenames, hhv6b_refid)
 
-
-
-
-
-
-exit()
-
-# 7. search for absent MEs
-if do_abs is True:
-    import find_absent
-    print()
-    log.logger.info('Absent ME search started.')
-    find_absent.find_abs(args, params, filenames)
-    # gzip files
-    utils.gzip_file(params, filenames.abs_txt)
-    utils.gzip_or_del(args, params, filenames.breakpoint_clean)
-    # output comments
-    log.logger.info('%d absent ME candidates found.' % find_absent.abs_n)
-    log.logger.info('Absent ME search finished!')
-
-
-# remove unnecessary files
-os.remove(filenames.repout_bed)
-os.remove(filenames.reshaped_rep)
-for f in glob.glob(filenames.repdb +'*'):
-    os.remove(f)
-log.logger.info('All analysis finished!')

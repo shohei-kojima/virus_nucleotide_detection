@@ -65,11 +65,11 @@ def identify_high_cov_virus_from_bedgraph(args, params, filenames):
             with open(args.vref) as infile:
                 for line in infile:
                     if '>' in line:
-                        ls=line.strip().split('\t')
+                        ls=line.strip().split(' ', 1)
                         virus_names[ls[0].replace('>', '')]=ls[1]
             # plot all high cov viruses
             plt.figure(figsize=(5, len(for_plot_d)+1))
-            gs=gridspec.GridSpec(len(ids), 1, height_ratios=[ 1 for i in range(len(for_plot_d))])
+            gs=gridspec.GridSpec(len(for_plot_d), 1, height_ratios=[ 1 for i in range(len(for_plot_d))])
             nums=[ n for n in range(len(for_plot_d)) ]
             labels=[ id +':'+ virus_names[id] for id in for_plot_d ]
             data=[ for_plot_d[id] for id in for_plot_d ]
@@ -86,8 +86,8 @@ def identify_high_cov_virus_from_bedgraph(args, params, filenames):
                         ymax=i[2]
                 ax.set_ylim([0, ymax])
                 ax.text(0, ymax, la, ha='left', va='top')
-            plt.suptitle('%s' % sample_id)
-            plt.savefig('%s_high_coverage_viruses.pdf' % sample_id)
+            plt.suptitle('Virus(es) with high coverage mapping')
+            plt.savefig(filenames.high_cov_pdf)
         
         
     except:
