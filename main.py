@@ -10,22 +10,29 @@ See file LICENSE for details.
 import os,sys,datetime,argparse,glob,logging
 
 '''
-time python main.py -overwrite -b test_data/NA12878.chr22.bam -fa /home/kooojiii/Documents/genomes/hg38/hg38.fa -p 4
+python main.py -overwrite -c test_data/NA18999.final.cram -fa /home/kooojiii/Documents/genomes/hg38/1kGP/GRCh38_full_analysis_set_plus_decoy_hla.fa -vref /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/viral_genomic_200405.fa -ht2index /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/hisat2_index/viral_genomic_200405 -keep -p 4
+
+python main.py -overwrite -unmappedin -unmap1 ./test_data/unmapped_merged_1.fq -unmap2 ./test_data/unmapped_merged_2.fq -fa /home/kooojiii/Documents/genomes/hg38/1kGP/GRCh38_full_analysis_set_plus_decoy_hla.fa -vref /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/viral_genomic_200405.fa -ht2index /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/hisat2_index/viral_genomic_200405 -keep -p 4
 '''
 
 
 # version
-version='2020/04/08'
+version='2020/04/21'
 
 
 # args
 parser=argparse.ArgumentParser(description='')
+parser.add_argument('-alignmentin', help='Optional. Specify if you use BAM/CRAM file for input. You also need to specify either -b or -c.', action='store_true')
 parser.add_argument('-b', metavar='str', type=str, help='Either -b or -c is Required. Specify input mapped paired-end BAM file.')  # , required=True
 parser.add_argument('-c', metavar='str', type=str, help='Either -b or -c is Required. Specify input mapped paired-end CRAM file.')  # , required=True
+parser.add_argument('-unmappedin', help='Optional. Specify if you use unmapped reads for input instead of BAM/CRAM file. You also need to specify -unmap1 and -unmap2.', action='store_true')
+parser.add_argument('-unmap1', metavar='str', type=str, help='Specify unmapped fastq file, read-1 of read pairs.')
+parser.add_argument('-unmap2', metavar='str', type=str, help='Specify unmapped fastq file, read-2 of read pairs.')
 parser.add_argument('-fa', metavar='str', type=str, help='Required. Specify reference genome which are used when input reads were mapped. Example: GRCh38DH.fa')
 parser.add_argument('-vref', metavar='str', type=str, help='Required. Specify reference of virus genomes, including HHV-6A and B. Example: viral_genomic_200405.fa')
 parser.add_argument('-ht2index', metavar='str', type=str, help='Required. Specify hisat2 index of virus genomes, including HHV-6A and B. Example: viral_genomic_200405')
 parser.add_argument('-outdir', metavar='str', type=str, help='Optional. Specify output directory. Default: ./result_out', default='./result_out')
+parser.add_argument('-overwrite', help='Optional. Specify if you overwrite previous results.', action='store_true')
 parser.add_argument('-keep', help='Optional. Specify if you do not want to delete temporary files.', action='store_true')
 parser.add_argument('-p', metavar='int', type=int, help='Optional. Number of threads. 4 is recommended. Default: 1', default=1)
 args=parser.parse_args()
@@ -81,29 +88,42 @@ filenames.hhv6a_pileup_naive  =os.path.join(args.outdir, 'hhv6a_piled.fa')
 
 
 # 0. Unmapped read retrieval
-import retrieve_unmapped
-log.logger.info('Unmapped read retrieval started.')
-retrieve_unmapped.retrieve_unmapped_reads(args, params, filenames)
+if args.alignmentin is True:
+    import retrieve_unmapped
+    log.logger.info('Unmapped read retrieval started.')
+    retrieve_unmapped.retrieve_unmapped_reads(args, params, filenames)
+elif args.unmappedin is True:
+    log.logger.info('Unmapped read retrieval skipped. Read1=%s, read2=%s.' % (args.unmap1, args.unmap2))
+    filenames.unmapped_merged_1=args.unmap1
+    filenames.unmapped_merged_2=args.unmap2
 
 # 1. mapping
 import mapping
-log.logger.info('Unmapped read retrieval started.')
+log.logger.info('Mapping of unmapped reads started.')
 mapping.map_to_viruses(args, filenames)
-utils.gzip_or_del(args, params, filenames.unmapped_merged_1)
-utils.gzip_or_del(args, params, filenames.unmapped_merged_2)
+if args.alignmentin is True:
+    utils.gzip_or_del(args, params, filenames.unmapped_merged_1)
+    utils.gzip_or_del(args, params, filenames.unmapped_merged_2)
+log.logger.info('BAM to bedgraph conversion started.')
 mapping.bam_to_bedgraph(args, params, filenames)
 
 # 2. identify high coverage viruses
 import identify_high_cov
+log.logger.info('Identification of high-coverage viruses started.')
 identify_high_cov.identify_high_cov_virus_from_bedgraph(args, params, filenames)
 
 # 3. reconstruct HHV-6
 import reconstruct_hhv6
 if identify_high_cov.hhv6a_highcov is True:
+    log.logger.info('HHV-6 sequence reconstruction started.')
     reconstruct_hhv6.pileup(args, params, filenames)
 
 
 
+
+
+
+exit()
 
 # 7. search for absent MEs
 if do_abs is True:

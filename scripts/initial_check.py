@@ -65,17 +65,37 @@ def check(args, argv):
         if os.path.exists(args.fa) is False:
             log.logger.error('Reference genome (%s) was not found.' % args.fa)
             exit(1)
-        if args.c is not None:
-            if os.path.exists(args.c) is False:
-                log.logger.error('CRAM file (%s) was not found.' % args.c)
-                exit(1)
-        elif args.b is not None:
-            if os.path.exists(args.b) is False:
-                log.logger.error('BAM file (%s) was not found.' % args.b)
-                exit(1)
-        else:
-            log.logger.error('Please specify BAM or CRAM file (-b or -c option).')
+        if args.alignmentin is False and args.unmappedin is False:
+            log.logger.error('Please specify either -alignmentin or -unmappedin.')
             exit(1)
+        elif args.alignmentin is True and args.unmappedin is True:
+            log.logger.error('Please specify either -alignmentin or -unmappedin.')
+            exit(1)
+        elif args.alignmentin is True:
+            if args.c is not None:
+                if os.path.exists(args.c) is False:
+                    log.logger.error('CRAM file (%s) was not found.' % args.c)
+                    exit(1)
+            elif args.b is not None:
+                if os.path.exists(args.b) is False:
+                    log.logger.error('BAM file (%s) was not found.' % args.b)
+                    exit(1)
+            else:
+                log.logger.error('Please specify BAM or CRAM file (-b or -c option).')
+                exit(1)
+        elif args.unmappedin is True:
+            if args.unmap1 is None:
+                log.logger.error('Please specify unmapped file.')
+                exit(1)
+            elif os.path.exists(args.unmap1) is False:
+                log.logger.error('Unmapped file (%s) was not found.' % args.unmap1)
+                exit(1)
+            if args.unmap2 is None:
+                log.logger.error('Please specify unmapped file.')
+                exit(1)
+            elif os.path.exists(args.unmap2) is False:
+                log.logger.error('Unmapped file (%s) was not found.' % args.unmap2)
+                exit(1)
 
     except:
         log.logger.error('\n'+ traceback.format_exc())

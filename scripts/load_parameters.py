@@ -15,7 +15,7 @@ class load:
         try:
             # default
             self.gzip_compresslevel=1
-            self.bedgraph_bin=100
+            self.bedgraph_bin=1
             self.read_cov_threshold=3
             self.genome_cov_thresholds=0.05
             

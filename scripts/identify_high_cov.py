@@ -40,7 +40,7 @@ def identify_high_cov_virus_from_bedgraph(args, params, filenames):
                             high_cov.append(prev_id)
                             for_plot_d[prev_id]=tmp_retain
                         tmp_retain=[]
-                    if int(ls[3]) >= read_cov_threshold:
+                    if int(ls[3]) >= params.read_cov_threshold:
                         cov_len= int(ls[2]) - int(ls[1])
                     else:
                         cov_len=0
