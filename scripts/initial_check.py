@@ -47,7 +47,7 @@ def check(args, argv):
             exit(1)
         
         # check PATH
-        for i in ['hisat2', 'bamCoverage']:
+        for i in ['bwa', 'bamCoverage']:
             if which(i) is None:
                 log.logger.error('%s not found in $PATH. Please check %s is installed and added to PATH.' % (i, i))
                 exit(1)
@@ -59,8 +59,8 @@ def check(args, argv):
         import pysam
         
         # check file paths
-        if os.path.exists(args.ht2index +'.1.ht2') is False:
-            log.logger.error('hisat2 index (%s) was not found.' % args.ht2db)
+        if os.path.exists(args.bwaindex +'.bwt') is False:
+            log.logger.error('bwa index (%s) was not found.' % args.ht2db)
             exit(1)
         if os.path.exists(args.fa) is False:
             log.logger.error('Reference genome (%s) was not found.' % args.fa)

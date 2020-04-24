@@ -18,14 +18,17 @@ def map_to_viruses(args, filenames):
             thread_n=args.p
         elif args.p >= 3:
             thread_n=args.p - 1
-        cmd='hisat2 --mp 2,1 -t -x %s -p %d -1 %s -2 %s --no-spliced-alignment | samtools sort -O BAM - > %s' % (args.ht2index, thread_n, filenames.unmapped_merged_1, filenames.unmapped_merged_2, filenames.mapped_to_virus_bam)
-        log.logger.debug('hisat2 command = `'+ cmd +'`')
+        cmd='bwa mem -Y -t %d %s %s %s | samtools view -Sbh -o %s -' % (thread_n, args.bwaindex, filenames.unmapped_merged_1, filenames.unmapped_merged_2, filenames.mapped_unsorted_bam)
+        log.logger.debug('bwa mem command = `'+ cmd +'`')
         out=subprocess.run(cmd, shell=True, stderr=subprocess.PIPE)
         log.logger.debug('\n'+ '\n'.join([ l.decode() for l in out.stderr.splitlines() ]))
         if not out.returncode == 0:
-            log.logger.error('Error occurred during hisat2 mapping.')
+            log.logger.error('Error occurred during bwa mem mapping.')
             exit(1)
+        pysam.sort('-@', str(thread_n), '-o', filenames.mapped_to_virus_bam, filenames.mapped_unsorted_bam)
         pysam.index('-@', str(thread_n), filenames.mapped_to_virus_bam)
+        if not args.keep is True:
+            os.remove(filenames.mapped_unsorted_bam)
     except:
         log.logger.error('\n'+ traceback.format_exc())
         exit(1)
