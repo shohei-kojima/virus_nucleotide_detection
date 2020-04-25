@@ -93,10 +93,11 @@ filenames.high_cov_pdf        =os.path.join(args.outdir, 'high_coverage_viruses.
 filenames.tmp_bam             =os.path.join(args.outdir, 'tmp.bam')
 filenames.tmp_rg_bam          =os.path.join(args.outdir, 'tmp_rg.bam')
 filenames.tmp_fa              =os.path.join(args.outdir, 'tmp.fa')
+filenames.tmp_masked_fa       =os.path.join(args.outdir, 'tmp_masked.fa')
 filenames.tmp_fa_dict         =os.path.join(args.outdir, 'tmp.dict')
 filenames.hhv6a_vcf_gz        =os.path.join(args.outdir, 'hhv6a.vcf.gz')
 filenames.hhv6a_norm_vcf_gz   =os.path.join(args.outdir, 'hhv6a_norm.vcf.gz')
-filenames.hhv6a_pileup_naive  =os.path.join(args.outdir, 'hhv6a_piled.fa')
+filenames.hhv6a_gatk_naive    =os.path.join(args.outdir, 'hhv6a_reconstructed.fa')
 
 
 # 0. Unmapped read retrieval

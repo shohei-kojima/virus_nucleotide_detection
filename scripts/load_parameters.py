@@ -15,9 +15,11 @@ class load:
         try:
             # default
             self.gzip_compresslevel=1
+            self.sam_mapq_threshold=5
             self.bedgraph_bin=1
             self.read_cov_threshold=3
             self.genome_cov_thresholds=0.05
+            self.depth_threshold=1
             
             params_for_debug=[]
             for k,v in self.__dict__.items():
