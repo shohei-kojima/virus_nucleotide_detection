@@ -10,7 +10,7 @@ See file LICENSE for details.
 import os,sys,datetime,argparse,glob,logging
 
 '''
-python main.py -overwrite -c test_data/NA18999.final.cram -fa /home/kooojiii/Documents/genomes/hg38/1kGP/GRCh38_full_analysis_set_plus_decoy_hla.fa -vref /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/viral_genomic_200405.fa -bwaindex /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/bwa_index/viral_genomic_200405 -keep -p 4
+python main.py -overwrite -alignmentin -c test_data/NA18999.final.cram -fa /home/kooojiii/Documents/genomes/hg38/1kGP/GRCh38_full_analysis_set_plus_decoy_hla.fa -vref /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/viral_genomic_200405.fa -bwaindex /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/bwa_index/viral_genomic_200405 -keep -p 4
 
 python main.py -overwrite -unmappedin -unmap1 ./test_data/unmapped_merged_1.fq -unmap2 ./test_data/unmapped_merged_2.fq -fa /home/kooojiii/Documents/genomes/hg38/1kGP/GRCh38_full_analysis_set_plus_decoy_hla.fa -vref /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/viral_genomic_200405.fa -bwaindex /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/bwa_index/viral_genomic_200405 -picard /home/kooojiii/bin/picard.jar -keep -p 4
 '''
@@ -82,6 +82,8 @@ filenames.unmapped_3          =os.path.join(args.outdir, 'unmapped_3.fq')
 filenames.unmapped_4          =os.path.join(args.outdir, 'unmapped_4.fq')
 filenames.unmapped_5          =os.path.join(args.outdir, 'unmapped_5.fq')
 filenames.unmapped_6          =os.path.join(args.outdir, 'unmapped_6.fq')
+filenames.unmapped_7          =os.path.join(args.outdir, 'unmapped_7.fq')
+filenames.unmapped_8          =os.path.join(args.outdir, 'unmapped_8.fq')
 filenames.unmapped_merged_1   =os.path.join(args.outdir, 'unmapped_merged_1.fq')
 filenames.unmapped_merged_2   =os.path.join(args.outdir, 'unmapped_merged_2.fq')
 filenames.mapped_unsorted_bam =os.path.join(args.outdir, 'mapped_to_virus.bam')
