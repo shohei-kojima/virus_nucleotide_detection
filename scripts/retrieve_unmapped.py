@@ -36,9 +36,10 @@ def retrieve_unmapped_reads(args, params, filenames):
             pysam.fastq('-@', '%d' % thread_n, '-f', '4', '-F', '3336', '-N', '-0', '/dev/null', '-1', filenames.unmapped_5, '-2', filenames.unmapped_6, '-s', '/dev/null', '--reference', args.fa, args.c)
         # both mapped, low MAPQ
         if not args.b is None:
-            pysam.fastq('-@', '%d' % thread_n, '-U', '-q', '%d' % params.sam_mapq_threshold, '-F', '3340', '-N', '-0', '/dev/null', '-1', filenames.unmapped_7, '-2', filenames.unmapped_8, '-s', '/dev/null', args.b)
+            pysam.view('-@', '%d' % thread_n, '-U', '-q', '%d' % params.sam_mapq_threshold, '-F', '3340', '-O', 'BAM', '-o', filenames.low_mapq_bam, args.b)
         elif not args.c is None:
-            pysam.fastq('-@', '%d' % thread_n, '-U', '-q', '%d' % params.sam_mapq_threshold, '-F', '3340', '-N', '-0', '/dev/null', '-1', filenames.unmapped_7, '-2', filenames.unmapped_8, '-s', '/dev/null', '--reference', args.fa, args.c)
+            pysam.view('-@', '%d' % thread_n, '-U', '-q', '%d' % params.sam_mapq_threshold, '-F', '3340', '-O', 'BAM', '-o', filenames.low_mapq_bam, '--reference', args.fa, args.c)
+        pysam.fastq('-@', '%d' % thread_n, '-N', '-0', '/dev/null', '-1', filenames.unmapped_7, '-2', filenames.unmapped_8, '-s', '/dev/null', filenames.low_mapq_bam)
         # concatenate fastq
         with open(filenames.unmapped_merged_1, 'w') as outfile:
             for f in [filenames.unmapped_1, filenames.unmapped_3, filenames.unmapped_5, filenames.unmapped_7]:
