@@ -58,6 +58,8 @@ def pileup(args, params, filenames, refseqid):
         header,seq=utils.retrieve_only_one_virus_fasta(args.vref, refseqid)
         with open(filenames.tmp_fa, 'w') as outfile:
             outfile.write('>%s\n%s\n' % (header, seq))
+        pysam.faidx(filenames.tmp_fa)
+        
         # mask low depth regions
         mask_low_depth(args, params, filenames, filenames.tmp_fa, refseqid)
         

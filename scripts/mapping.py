@@ -18,7 +18,10 @@ def map_to_viruses(args, filenames):
             thread_n=args.p
         elif args.p >= 3:
             thread_n=args.p - 1
-        cmd='bwa mem -Y -t %d %s %s %s | samtools view -Sbh -o %s -' % (thread_n, args.bwaindex, filenames.unmapped_merged_1, filenames.unmapped_merged_2, filenames.mapped_unsorted_bam)
+        if not args.hisat2 is True:
+            cmd='bwa mem -Y -t %d %s %s %s | samtools view -Sbh -o %s -' % (thread_n, args.vrefindex, filenames.unmapped_merged_1, filenames.unmapped_merged_2, filenames.mapped_unsorted_bam)
+        else:
+            cmd='hisat2 -t -x %s -p %d -1 %s -2 %s --no-spliced-alignment | samtools view -Sbh -o %s -' % (args.vrefindex, thread_n, filenames.unmapped_merged_1, filenames.unmapped_merged_2, filenames.mapped_unsorted_bam)
         log.logger.debug('bwa mem command = `'+ cmd +'`')
         out=subprocess.run(cmd, shell=True, stderr=subprocess.PIPE)
         log.logger.debug('\n'+ '\n'.join([ l.decode() for l in out.stderr.splitlines() ]))

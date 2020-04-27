@@ -47,10 +47,21 @@ def check(args, argv):
             exit(1)
         
         # check PATH
-        for i in ['bwa', 'bamCoverage']:
+        for i in ['samtools', 'bcftools', 'bamCoverage', 'gatk']:
             if which(i) is None:
                 log.logger.error('%s not found in $PATH. Please check %s is installed and added to PATH.' % (i, i))
                 exit(1)
+        if not args.hisat2 is True:
+            if which('bwa') is None:
+                log.logger.error('bwa not found in $PATH. Please check bwa is installed and added to PATH.')
+                exit(1)
+        else:
+            if which('hisat2') is None:
+                log.logger.error('hisat2 not found in $PATH. Please check hisat2 is installed and added to PATH.')
+                exit(1)
+        if os.path.exists(args.picard) is False:
+            log.logger.error('%s not found. Please check %s is installed.' % (args.picard, args.picard))
+            exit(1)
 
         # check prerequisite modules
         from Bio.Seq import Seq
@@ -59,17 +70,23 @@ def check(args, argv):
         import pysam
         
         # check file paths
-        if os.path.exists(args.bwaindex +'.bwt') is False:
-            log.logger.error('bwa index (%s) was not found.' % args.ht2db)
+        if args.bwa is True:
+            if os.path.exists(args.bwaindex +'.bwt') is False:
+                log.logger.error('bwa index (%s) was not found.' % args.vrefindex)
+                exit(1)
+        else:
+            if os.path.exists(args.bwaindex +'.1.ht2') is False:
+                log.logger.error('hisat2 index (%s) was not found.' % args.vrefindex)
+                exit(1)
+        if args.c is True:
+            if os.path.exists(args.fa) is False:
+                log.logger.error('Reference genome (%s) was not found.' % args.fa)
+                exit(1)
+        if args.alignmentin is False and args.fastqin is False:
+            log.logger.error('Please specify either -alignmentin or -fastqin.')
             exit(1)
-        if os.path.exists(args.fa) is False:
-            log.logger.error('Reference genome (%s) was not found.' % args.fa)
-            exit(1)
-        if args.alignmentin is False and args.unmappedin is False:
-            log.logger.error('Please specify either -alignmentin or -unmappedin.')
-            exit(1)
-        elif args.alignmentin is True and args.unmappedin is True:
-            log.logger.error('Please specify either -alignmentin or -unmappedin.')
+        elif args.alignmentin is True and args.fastqin is True:
+            log.logger.error('Please specify either -alignmentin or -fastqin.')
             exit(1)
         elif args.alignmentin is True:
             if args.c is not None:
@@ -83,19 +100,21 @@ def check(args, argv):
             else:
                 log.logger.error('Please specify BAM or CRAM file (-b or -c option).')
                 exit(1)
-        elif args.unmappedin is True:
-            if args.unmap1 is None:
+        elif args.fastqin is True:
+            if args.fq1 is None:
                 log.logger.error('Please specify unmapped file.')
                 exit(1)
-            elif os.path.exists(args.unmap1) is False:
-                log.logger.error('Unmapped file (%s) was not found.' % args.unmap1)
+            elif os.path.exists(args.fq1) is False:
+                log.logger.error('Unmapped file (%s) was not found.' % args.fq1)
                 exit(1)
-            if args.unmap2 is None:
+            if args.fq2 is None:
                 log.logger.error('Please specify unmapped file.')
                 exit(1)
-            elif os.path.exists(args.unmap2) is False:
-                log.logger.error('Unmapped file (%s) was not found.' % args.unmap2)
+            elif os.path.exists(args.fq2) is False:
+                log.logger.error('Unmapped file (%s) was not found.' % args.fq2)
                 exit(1)
+            if args.only_unmapped is True:
+                log.logger.info('"-only_unmapped" option is only available when "-alignmentin" option was specified. Will ignore this and proceed anyway.')
 
     except:
         log.logger.error('\n'+ traceback.format_exc())
