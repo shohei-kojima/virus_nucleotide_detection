@@ -51,7 +51,7 @@ def check(args, argv):
             if which(i) is None:
                 log.logger.error('%s not found in $PATH. Please check %s is installed and added to PATH.' % (i, i))
                 exit(1)
-        if not args.hisat2 is True:
+        if args.bwa is True:
             if which('bwa') is None:
                 log.logger.error('bwa not found in $PATH. Please check bwa is installed and added to PATH.')
                 exit(1)
@@ -71,11 +71,11 @@ def check(args, argv):
         
         # check file paths
         if args.bwa is True:
-            if os.path.exists(args.bwaindex +'.bwt') is False:
+            if os.path.exists(args.vrefindex +'.bwt') is False:
                 log.logger.error('bwa index (%s) was not found.' % args.vrefindex)
                 exit(1)
         else:
-            if os.path.exists(args.bwaindex +'.1.ht2') is False:
+            if os.path.exists(args.vrefindex +'.1.ht2') is False:
                 log.logger.error('hisat2 index (%s) was not found.' % args.vrefindex)
                 exit(1)
         if args.c is True:

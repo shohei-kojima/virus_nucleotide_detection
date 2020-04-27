@@ -10,9 +10,14 @@ See file LICENSE for details.
 import os,sys,datetime,argparse,glob,logging
 
 '''
-python main.py -overwrite -alignmentin -c test_data/NA18999.final.cram -fa /home/kooojiii/Documents/genomes/hg38/1kGP/GRCh38_full_analysis_set_plus_decoy_hla.fa -vref /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/viral_genomic_200405.fa -bwaindex /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/bwa_index/viral_genomic_200405 -picard /home/kooojiii/bin/picard.jar -keep -p 4
+# hisat2
+python main.py -overwrite -alignmentin -c test_data/NA18999.final.cram -fa /home/kooojiii/Documents/genomes/hg38/1kGP/GRCh38_full_analysis_set_plus_decoy_hla.fa -vref /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/viral_genomic_200405.fa -vrefindex /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/bwa_index/viral_genomic_200405 -picard /home/kooojiii/bin/picard.jar -keep -p 4
 
-python main.py -overwrite -unmappedin -1 ./test_data/unmapped_merged_1.fq -2 ./test_data/unmapped_merged_2.fq -fa /home/kooojiii/Documents/genomes/hg38/1kGP/GRCh38_full_analysis_set_plus_decoy_hla.fa -vref /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/viral_genomic_200405.fa -bwaindex /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/bwa_index/viral_genomic_200405 -picard /home/kooojiii/bin/picard.jar -keep -p 4
+python main.py -overwrite -unmappedin -1 ./test_data/unmapped_merged_1.fq -2 ./test_data/unmapped_merged_2.fq -fa /home/kooojiii/Documents/genomes/hg38/1kGP/GRCh38_full_analysis_set_plus_decoy_hla.fa -vref /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/viral_genomic_200405.fa -vrefindex /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/bwa_index/viral_genomic_200405 -picard /home/kooojiii/bin/picard.jar -keep -p 4
+
+# bwa
+python main.py -overwrite -alignmentin -bwa -c test_data/NA18999.final.cram -fa /home/kooojiii/Documents/genomes/hg38/1kGP/GRCh38_full_analysis_set_plus_decoy_hla.fa -vref /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/viral_genomic_200405.fa -vrefindex /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/hisat2_index/viral_genomic_200405 -picard /home/kooojiii/bin/picard.jar -keep -p 5
+
 '''
 
 
@@ -28,14 +33,14 @@ hhv6b_refid='NC_000898.1'
 # args
 parser=argparse.ArgumentParser(description='')
 parser.add_argument('-alignmentin', help='Optional. Specify if you use BAM/CRAM file for input. You also need to specify either -b or -c.', action='store_true')
-parser.add_argument('-use_all_discordant', help='Optional. Specify if you use all discordant reads from BAM/CRAM file for mapping to viruses. Otherwise, only unmapped reads will be used (default).', action='store_true')
-parser.add_argument('-b', metavar='str', type=str, help='Either -b or -c is Required. Specify input mapped paired-end BAM file.')  # , required=True
-parser.add_argument('-c', metavar='str', type=str, help='Either -b or -c is Required. Specify input mapped paired-end CRAM file.')  # , required=True
+parser.add_argument('-only_unmapped', help='Optional. Specify if you use only unmapped reads from BAM/CRAM file for mapping to viruses. Otherwise, all discordant reads will be used (default).', action='store_true')
+parser.add_argument('-b', metavar='str', type=str, help='Either -b or -c is Required. Specify input mapped paired-end BAM file.')
+parser.add_argument('-c', metavar='str', type=str, help='Either -b or -c is Required. Specify input mapped paired-end CRAM file.')
 parser.add_argument('-fastqin', help='Optional. Specify if you use unmapped reads for input instead of BAM/CRAM file. You also need to specify -fq1 and -fq2.', action='store_true')
 parser.add_argument('-fq1', metavar='str', type=str, help='Specify unmapped fastq file, read-1 of read pairs.')
 parser.add_argument('-fq2', metavar='str', type=str, help='Specify unmapped fastq file, read-2 of read pairs.')
 parser.add_argument('-fa', metavar='str', type=str, help='Required. Specify reference genome which are used when input reads were mapped. Example: GRCh38DH.fa')
-parser.add_argument('-hisat2', metavar='str', type=str, help='Optional. Specify if you use hisat2 for mapping instead of BWA.')
+parser.add_argument('-bwa', help='Optional. Specify if you use BWA for mapping instead of hisat2.', action='store_true')
 parser.add_argument('-vref', metavar='str', type=str, help='Required. Specify reference of virus genomes, including HHV-6A and B. Example: viral_genomic_200405.fa')
 parser.add_argument('-vrefindex', metavar='str', type=str, help='Required. Specify hisat2 index of virus genomes, including HHV-6A and B. Example: viral_genomic_200405')
 parser.add_argument('-picard', metavar='str', type=str, help='Required. Specify full path to picard.jar. Example: /path/to/picard/picard.jar')
@@ -108,24 +113,24 @@ filenames.hhv6a_gatk_naive    =os.path.join(args.outdir, 'hhv6a_reconstructed.fa
 
 
 # 0. Unmapped read retrieval
-#if args.alignmentin is True:
-#    import retrieve_unmapped
-#    log.logger.info('Unmapped read retrieval started.')
-#    retrieve_unmapped.retrieve_unmapped_reads(args, params, filenames)
-#elif args.fastqin is True:
-#    log.logger.info('Unmapped read retrieval skipped. Read1=%s, read2=%s.' % (args.fq1, args.fq2))
-#    filenames.unmapped_merged_1=args.fq1
-#    filenames.unmapped_merged_2=args.fq2
+if args.alignmentin is True:
+    import retrieve_unmapped
+    log.logger.info('Unmapped read retrieval started.')
+    retrieve_unmapped.retrieve_unmapped_reads(args, params, filenames)
+elif args.fastqin is True:
+    log.logger.info('Unmapped read retrieval skipped. Read1=%s, read2=%s.' % (args.fq1, args.fq2))
+    filenames.unmapped_merged_1=args.fq1
+    filenames.unmapped_merged_2=args.fq2
 
 # 1. mapping
 import mapping
-#log.logger.info('Mapping of unmapped reads started.')
-#mapping.map_to_viruses(args, filenames)
-#if args.alignmentin is True:
-#    utils.gzip_or_del(args, params, filenames.unmapped_merged_1)
-#    utils.gzip_or_del(args, params, filenames.unmapped_merged_2)
-#log.logger.info('BAM to bedgraph conversion started.')
-#mapping.bam_to_bedgraph(args, params, filenames)
+log.logger.info('Mapping of unmapped reads started.')
+mapping.map_to_viruses(args, filenames)
+if args.alignmentin is True:
+    utils.gzip_or_del(args, params, filenames.unmapped_merged_1)
+    utils.gzip_or_del(args, params, filenames.unmapped_merged_2)
+log.logger.info('BAM to bedgraph conversion started.')
+mapping.bam_to_bedgraph(args, params, filenames)
 
 # 2. identify high coverage viruses
 import identify_high_cov
