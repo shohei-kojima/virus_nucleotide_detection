@@ -22,7 +22,7 @@ python main.py -overwrite -alignmentin -bwa -c test_data/NA18999.final.cram -fa 
 
 
 # version
-version='2020/04/24'
+version='2020/04/27'
 
 
 # HHV-6 refseq IDs
