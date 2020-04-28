@@ -14,6 +14,7 @@
 - bamCoverage 3.3.1 or later (deeptools 3.3.1 or later)
 - gatk 4.1.7.0 or later
 - picard 2.21.9 or later
+- java (version matches to your picard)
 
 ### optional prerequisites
 - bwa 0.7.17 or later (if you specify '-bwa' option)
@@ -163,6 +164,9 @@ Use when specifing reference virus genome file available from NCBI. This option 
 
 ### '-vrefindex [index of reference virus genome file]'
 Use when specifing reference virus genome index. This option is always required. See 'preparing virus genome reference file' section for detail.
+
+### '-picard [picard.jar file]'
+Use when specifing the path to 'picard.jar' file. This option is always required. 
 
 ### '-p [integer]'
 Number of threads. 3 or more is recommended. Default = 2.
