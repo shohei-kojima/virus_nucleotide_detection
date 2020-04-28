@@ -11,7 +11,7 @@ python main.py \
 -alignmentin \
 -b test.bam \
 -vref /path/to/viral_genomic_seq.fa \
--vrefindex /path/to/viral_genomic_seq_bwa_index \
+-vrefindex /path/to/viral_genomic_seq_hisat2_index \
 -picard /path/to/picard.jar \
 -p 4
 ```
@@ -25,7 +25,7 @@ python main.py \
 -c test.cram \
 -fa /path/to/reference/genome/of/cram/GRCh38.fa \
 -vref /path/to/viral_genomic_seq.fa \
--vrefindex /path/to/viral_genomic_seq_bwa_index \
+-vrefindex /path/to/viral_genomic_seq_hisat2_index \
 -picard /path/to/picard.jar \
 -p 4
 ```
@@ -38,7 +38,7 @@ python main.py \
 -only_unmapped \
 -b test.bam \
 -vref /path/to/viral_genomic_seq.fa \
--vrefindex /path/to/viral_genomic_seq_bwa_index \
+-vrefindex /path/to/viral_genomic_seq_hisat2_index \
 -picard /path/to/picard.jar \
 -p 4
 ```
@@ -51,7 +51,7 @@ python main.py \
 -fq1 test_1.fastq \
 -fq2 test_2.fastq \
 -vref /path/to/viral_genomic_seq.fa \
--vrefindex /path/to/viral_genomic_seq_bwa_index \
+-vrefindex /path/to/viral_genomic_seq_hisat2_index \
 -picard /path/to/picard.jar \
 -p 4
 ```
@@ -64,7 +64,7 @@ python main.py \
 -denovo \
 -b test.bam \
 -vref /path/to/viral_genomic_seq.fa \
--vrefindex /path/to/viral_genomic_seq_bwa_index \
+-vrefindex /path/to/viral_genomic_seq_hisat2_index \
 -picard /path/to/picard.jar \
 -p 4
 ```
