@@ -9,17 +9,6 @@ See file LICENSE for details.
 
 import os,sys,datetime,argparse,glob,logging
 
-'''
-# hisat2
-python main.py -overwrite -alignmentin -c test_data/NA18999.final.cram -fa /home/kooojiii/Documents/genomes/hg38/1kGP/GRCh38_full_analysis_set_plus_decoy_hla.fa -vref /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/viral_genomic_200405.fa -vrefindex /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/hisat2_index/viral_genomic_200405 -picard /home/kooojiii/bin/picard.jar -keep -p 4
-
-python main.py -overwrite -fastqin -fq1 ./test_data/unmapped_merged_1.fq -fq2 ./test_data/unmapped_merged_2.fq -fa /home/kooojiii/Documents/genomes/hg38/1kGP/GRCh38_full_analysis_set_plus_decoy_hla.fa -vref /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/viral_genomic_200405.fa -vrefindex /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/hisat2_index/viral_genomic_200405 -picard /home/kooojiii/bin/picard.jar -keep -p 4
-
-# bwa
-python main.py -overwrite -alignmentin -bwa -c test_data/NA18999.final.cram -fa /home/kooojiii/Documents/genomes/hg38/1kGP/GRCh38_full_analysis_set_plus_decoy_hla.fa -vref /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/viral_genomic_200405.fa -vrefindex /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/bwa_index/viral_genomic_200405 -picard /home/kooojiii/bin/picard.jar -keep -p 5
-
-'''
-
 
 # version
 version='2020/04/28'
@@ -48,7 +37,7 @@ parser.add_argument('-picard', metavar='str', type=str, help='Required. Specify 
 parser.add_argument('-outdir', metavar='str', type=str, help='Optional. Specify output directory. Default: ./result_out', default='./result_out')
 parser.add_argument('-overwrite', help='Optional. Specify if you overwrite previous results.', action='store_true')
 parser.add_argument('-keep', help='Optional. Specify if you do not want to delete temporary files.', action='store_true')
-parser.add_argument('-p', metavar='int', type=int, help='Optional. Number of threads. 4 is recommended. Default: 1', default=1)
+parser.add_argument('-p', metavar='int', type=int, help='Optional. Number of threads. 3 or more is recommended. Default: 2', default=2)
 args=parser.parse_args()
 
 
@@ -138,7 +127,7 @@ if args.alignmentin is True:
     utils.gzip_or_del(args, params, filenames.unmapped_merged_1)
     utils.gzip_or_del(args, params, filenames.unmapped_merged_2)
 log.logger.info('BAM to bedgraph conversion started.')
-#mapping.bam_to_bedgraph(args, params, filenames)
+mapping.bam_to_bedgraph(args, params, filenames)
 
 # 2. identify high coverage viruses
 import identify_high_cov
