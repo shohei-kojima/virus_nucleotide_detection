@@ -25,7 +25,7 @@ parser.add_argument('-alignmentin', help='Optional. Specify if you use BAM/CRAM 
 parser.add_argument('-b', metavar='str', type=str, help='Either -b or -c is Required. Specify input mapped paired-end BAM file.')
 parser.add_argument('-c', metavar='str', type=str, help='Either -b or -c is Required. Specify input mapped paired-end CRAM file.')
 parser.add_argument('-fa', metavar='str', type=str, help='Required. Specify reference genome which are used when input reads were mapped. Example: GRCh38DH.fa')
-parser.add_argument('-only_unmapped', help='Optional. Specify if you use only unmapped reads from BAM/CRAM file for mapping to viruses. Otherwise, all discordant reads will be used (default).', action='store_true')
+parser.add_argument('-all_discordant', help='Optional. Specify if you use all discordant reads from BAM/CRAM file for mapping to viruses. Otherwise, only unmapped reads will be used (default).', action='store_true')
 parser.add_argument('-fastqin', help='Optional. Specify if you use unmapped reads for input instead of BAM/CRAM file. You also need to specify -fq1 and -fq2.', action='store_true')
 parser.add_argument('-fq1', metavar='str', type=str, help='Specify unmapped fastq file, read-1 of read pairs.')
 parser.add_argument('-fq2', metavar='str', type=str, help='Specify unmapped fastq file, read-2 of read pairs.')

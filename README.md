@@ -58,18 +58,18 @@ python main.py \
 ```
 In this case, you need to specify your CRAM file with '-c' option. You also need to specify '-alignmentin' option and '-fa' option as well.
 
-### when you use only unmapped reads in BAM/CRAM file for mapping to virus genome (alignmentin option + only_unmapped option)
+### when you use all discordant reads in BAM/CRAM file for mapping to virus genome (alignmentin option + all_discordant option)
 ```
 python main.py \
 -alignmentin \
--only_unmapped \
+-all_discordant \
 -b test.bam \
 -vref /path/to/viral_genomic_seq.fa \
 -vrefindex /path/to/viral_genomic_seq_hisat2_index \
 -picard /path/to/picard.jar \
 -p 4
 ```
-By default, this tool use all discordant reads (e.g. reads without sam flag '2') for mapping to viruses when BAM or CRAM file are specified as an input. Those discordant reads includes read-pairs with distant mapped positions and ones with low MAPQ; therefore, the number of discordant reads are far higher than unmapped reads. If you want to use only unmapped reads to reduce computational burden, you can specify '-only_unmapped' option. This option is only available when '-alignmentin' option was specified. This option is primarily intended for quick screening of HHV-6 positive samples. Please use it at your own risk.
+By default, only unmapped reads for mapping to viruses when BAM or CRAM file is specified as an input. If you want to use all discordant reads (e.g. reads without sam flag '2') for mapping to viruses, you can specify '-all_discordant' option. The discordant reads includes read-pairs with distant mapped positions and ones with low MAPQ; therefore, the number of discordant reads are far higher than unmapped reads. This option is only available when '-alignmentin' option was specified. Although this option is less accurate than default setting (= use only unmapped reads), the coverage of reconstructed sequence is longer than default. Please use this at your own risk.
 
 ### when you use your fastq files as inputs (fastqin option)
 ```
@@ -101,7 +101,7 @@ python main.py \
 
 # 3. output files
 ### 'virus_detection_summary.txt'
-This is a main result file for most users. This contains read coverage information of each virus genome.
+This is one of the main result files for most users. This contains read coverage information of each virus genome.
 
 - 1st column: RefSeq ID (fasta header without attribution)
 - 2nd column: Whether a virus-derived reads are abundantly detected or not
@@ -113,6 +113,15 @@ This is a main result file for most users. This contains read coverage informati
     - average_depth_of_mapped_region: Average of mapped read depth of mapped regions (average of only mapped regions)
 - 4th column: attribution of fasta header
 
+### 'hhv6a_reconstructed.fa', 'hhv6b_reconstructed.fa'
+This is one of the main result files for most users. This file contains HHV-6 sequence reconstructed with called variants. This tool outputs this file only when your sample contained either HHV-6A or HHV-6B. Genomic regions where do not have any reads (= 0 read mapped) are masked by a character 'N.'
+
+### 'high_coverage_viruses.pdf'
+This is one of the main result files for most users. If there is one or more viruses in your sample, this tool outputs read coverage of those viruses.
+
+### 'hhv6a.vcf.gz', 'hhv6b.vcf.gz'
+This is one of the main result files for most users. This file contains variant calls. This tool outputs this file only when your sample contained either HHV-6A or HHV-6B.
+
 ### 'mapped_to_virus_dedup.bam'
 BAM file containing alignment with virus genomes.
 
@@ -121,15 +130,6 @@ Read depth of virus genomes.
 
 ### 'mark_duplicate_metrix.txt'
 Summary of picard MarkDuplicates running with 'mapped_to_virus_dedup.bam.'
-
-### 'high_coverage_viruses.pdf'
-If there is one or more viruses in your sample, this tool outputs read coverage of those viruses.
-
-### 'hhv6a.vcf.gz', 'hhv6b.vcf.gz'
-This file contains variant calls. This tool outputs this file only when your sample contained either HHV-6A or HHV-6B.
-
-### 'hhv6a_reconstructed.fa', 'hhv6b_reconstructed.fa'
-This file contains HHV-6 sequence reconstructed with called variants. This tool outputs this file only when your sample contained either HHV-6A or HHV-6B.
 
 ### 'hhv6a_metaspades_assembly', 'hhv6b_metaspades_assembly'
 This file contains HHV-6 sequence reconstructed by metaspades. This tool outputs this file only when your sample contained either HHV-6A or HHV-6B. You need to specify '-denovo' option to obtain this result.
@@ -149,9 +149,9 @@ Use when specifing BAM file. Available only when '-alignmentin' is also specifie
 ### '-c [CRAM file] -fa [reference fasta file]'
 Use when specifing CRAM file. Available only when '-alignmentin' is also specified.
 
-### '-only_unmapped'
-Specify when you use only unmapped reads from BAM or CRAM file.
-By default, this tool use all discordant reads (e.g. reads without sam flag '2') for mapping to viruses when BAM or CRAM file are specified as an input. Those discordant reads includes read-pairs with distant mapped positions and ones with low MAPQ; therefore, the number of discordant reads are far higher than unmapped reads. If you want to use only unmapped reads to reduce computational burden, you can specify '-only_unmapped' option. This option is only available when '-alignmentin' option was specified. This option is primarily intended for quick screening of HHV-6 positive samples. Please use it at your own risk.
+### '-all_discordant'
+Specify when you use all discordant reads from BAM or CRAM file.
+By default, only unmapped reads for mapping to viruses when BAM or CRAM file is specified as an input. If you want to use all discordant reads (e.g. reads without sam flag '2') for mapping to viruses, you can specify '-all_discordant' option. The discordant reads includes read-pairs with distant mapped positions and ones with low MAPQ; therefore, the number of discordant reads are far higher than unmapped reads. This option is only available when '-alignmentin' option was specified. Although this option is less accurate than default setting (= use only unmapped reads), the coverage of reconstructed sequence is longer than default. Please use this at your own risk.
 
 ### '-unmappedin'
 Specify when you use fastq files as inputs. You also need to specify your input file with '-fq1' or '-fq2' options.

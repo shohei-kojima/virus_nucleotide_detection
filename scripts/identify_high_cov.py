@@ -101,22 +101,20 @@ def identify_high_cov_virus_from_bedgraph(args, params, filenames):
             nums=[ n for n in range(len(for_plot_d)) ]
             labels=[ id +':'+ virus_names[id] for id in for_plot_d ]
             data=[ for_plot_d[id] for id in for_plot_d ]
-            for d,n,la in zip(data, nums, labels):
+            for dat,n,la in zip(data, nums, labels):
                 ax=plt.subplot(gs[n])
-                for i in d:
-                    if i[2] >= 1:
-                        rect=matplotlib.patches.Rectangle((i[0], 0), i[1]-i[0], i[2], color='dodgerblue', ec=None)
-                        ax.add_patch(rect)
-                ax.set_xlim([0, i[1]])
-                ymax=1
-                for i in d:
-                    if i[2] > ymax:
-                        ymax=i[2]
+                x,y,zero=[],[],[]
+                for s,e,v in dat:
+                    x.extend([s, e])
+                    y.extend([v, v])
+                    zero.extend([0, 0])
+                ax.fill_between(x, y, zero, facecolor='dodgerblue')
+                ymax=max(y)
+                ax.set_xlim([0, x[-1]])
                 ax.set_ylim([0, ymax])
                 ax.text(0, ymax, la, ha='left', va='top')
             plt.suptitle('Virus(es) with high coverage mapping')
             plt.savefig(filenames.high_cov_pdf)
-        
         
     except:
         log.logger.error('\n'+ traceback.format_exc())
