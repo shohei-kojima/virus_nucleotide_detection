@@ -60,36 +60,45 @@ def gzip_d(gzfile):
         exit(1)
 
 
-
 def parse_fasta(path_to_file):
-    tmp={}
-    seq=''
-    with open(path_to_file) as infile:
-        for line in infile:
-            if '>' in line and seq:
-                tmp[header]=seq
-                header=line.strip().replace(' ', '_')
-                seq=''
-            elif '>' in line and not seq:
-                header=line.strip().replace(' ', '_')
-            else:
-                seq += line.strip()
-        tmp[header]=seq
-    return tmp
+    log.logger.debug('started.')
+    try:
+        tmp={}
+        seq=''
+        with open(path_to_file) as infile:
+            for line in infile:
+                if '>' in line and seq:
+                    tmp[header]=seq
+                    header=line.strip().replace(' ', '_')
+                    seq=''
+                elif '>' in line and not seq:
+                    header=line.strip().replace(' ', '_')
+                else:
+                    seq += line.strip()
+            tmp[header]=seq
+        return tmp
+    except:
+        log.logger.error('\n'+ traceback.format_exc())
+        exit(1)
 
 
 def retrieve_only_one_virus_fasta(path_to_file, refseqid):
-    seq=''
-    keep=False
-    with open(path_to_file) as infile:
-        for line in infile:
-            if refseqid in line:
-                header=line.strip().replace('>', '')
-                keep=True
-            elif keep is True:
-                if not '>' in line:
-                    seq += line.strip()
-                else:
-                    break
-    return header, seq
+    log.logger.debug('started.')
+    try:
+        seq=''
+        keep=False
+        with open(path_to_file) as infile:
+            for line in infile:
+                if refseqid in line:
+                    header=line.strip().replace('>', '')
+                    keep=True
+                elif keep is True:
+                    if not '>' in line:
+                        seq += line.strip()
+                    else:
+                        break
+        return header, seq
+    except:
+        log.logger.error('\n'+ traceback.format_exc())
+        exit(1)
 
