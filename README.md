@@ -1,9 +1,9 @@
-# iciHHV6_reconstruction
+# This is a README file for iciHHV6_reconstruction_pipeline
 
-# download this tool from GitHub
+# 1. download this tool from GitHub
 git clone https://github.com/shohei-kojima/iciHHV6_reconstruction
 
-# quick usage guide for impatient
+# 2. quick usage guide for impatient
 
 ### when you use your BAM file as an input (alignmentin option)
 ```
@@ -71,7 +71,7 @@ python main.py \
 '-denovo' option performs de novo assembly of HHV-6 sequence, in addition to variant call and consensus sequence generation. 
 
 
-# output files
+# 3. output files
 ### 'virus_detection_summary.txt'
 This is a main result file for most users. This contains read coverage information of each virus genome.
 
@@ -110,7 +110,7 @@ This file contains HHV-6 sequence reconstructed by metaspades. This tool outputs
 Log file. Stores all information, including input arguments and parameter setting.
 
 
-# other options
+# 4. other options
 ### '-p [integer]'
 Number of threads. 3 or more is recommended. Default = 2.
 
