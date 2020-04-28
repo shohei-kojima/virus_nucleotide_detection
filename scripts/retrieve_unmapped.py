@@ -25,6 +25,8 @@ def retrieve_unmapped_reads(args, params, filenames):
         elif not args.c is None:
             pysam.view('-@', '%d' % thread_n, '-f', '1', '-F', '3842', '-b', '-o', filenames.discordant_bam, '--reference', args.fa, args.c, catch_stdout=False)
         pysam.sort('-@', '%d' % thread_n, '-n', '-O', 'BAM', '-o', filenames.discordant_sort_bam, filenames.discordant_bam)
+        if args.keep is False:
+            os.remove(filenames.discordant_bam)
         if args.only_unmapped is False:
             pysam.fastq('-@', '%d' % thread_n, '-N', '-0', '/dev/null', '-1', filenames.unmapped_merged_1, '-2', filenames.unmapped_merged_2, '-s', '/dev/null', filenames.discordant_sort_bam)
         else:
@@ -44,6 +46,9 @@ def retrieve_unmapped_reads(args, params, filenames):
                         for line in infile:
                             outfile.write(line)
                     utils.gzip_or_del(args, params, f)
+        if args.keep is False:
+            os.remove(filenames.discordant_sort_bam)
+
     except:
         log.logger.error('\n'+ traceback.format_exc())
         exit(1)

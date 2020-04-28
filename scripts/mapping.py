@@ -11,6 +11,7 @@ import os,sys,subprocess,pysam
 import utils
 import log,traceback
 
+
 def map_to_viruses(args, params, filenames):
     log.logger.debug('started.')
     try:

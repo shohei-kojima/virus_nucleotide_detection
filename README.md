@@ -1,7 +1,16 @@
 # This is a README file for iciHHV6_reconstruction_pipeline
 
+
+
+# 0. prerequisites
+
+
+
+
 # 1. download this tool from GitHub
 git clone https://github.com/shohei-kojima/iciHHV6_reconstruction
+
+
 
 # 2. quick usage guide for impatient
 
@@ -71,6 +80,7 @@ python main.py \
 '-denovo' option performs de novo assembly of HHV-6 sequence, in addition to variant call and consensus sequence generation. 
 
 
+
 # 3. output files
 ### 'virus_detection_summary.txt'
 This is a main result file for most users. This contains read coverage information of each virus genome.
@@ -110,7 +120,33 @@ This file contains HHV-6 sequence reconstructed by metaspades. This tool outputs
 Log file. Stores all information, including input arguments and parameter setting.
 
 
-# 4. other options
+
+# 4. options
+### '-alignmentin'
+Specify when you use BAM or CRAM file as an input. You also need to specify your input file with '-b' or '-c' option. When you use CRAM file as an input, you also need to specify reference genome with '-fa' option.
+
+### '-b [BAM file]'
+Use when specifing BAM file. Available only when '-alignmentin' is also specified.
+
+### '-c [CRAM file] -fa [reference fasta file]'
+Use when specifing CRAM file. Available only when '-alignmentin' is also specified.
+
+### '-only_unmapped'
+Specify when you use only unmapped reads from BAM or CRAM file.
+By default, this tool use all discordant reads (e.g. reads without sam flag '2') for mapping to viruses when BAM or CRAM file are specified as an input. Those discordant reads includes read-pairs with distant mapped positions and ones with low MAPQ; therefore, the number of discordant reads are far higher than unmapped reads. If you want to use only unmapped reads to reduce computational burden, you can specify '-only_unmapped' option. This option is only available when '-alignmentin' option was specified. This option is primarily intended for quick screening of HHV-6 positive samples. Please use it at your own risk.
+
+### '-unmappedin'
+Specify when you use fastq files as inputs. You also need to specify your input file with '-fq1' or '-fq2' options.
+
+### '-fq1 [read_1 fastq file] -fq2 [read_2 fastq file]'
+Use when specifing fastq file. Available only when '-unmappedin' is also specified.
+
+### '-vref [reference virus genome file]'
+Use when specifing reference virus genome file available from NCBI. This option is always required. See 'preparing virus genome reference file' section for detail.
+
+### '-vrefindex [index of reference virus genome file]'
+Use when specifing reference virus genome index. This option is always required. See 'preparing virus genome reference file' section for detail.
+
 ### '-p [integer]'
 Number of threads. 3 or more is recommended. Default = 2.
 
@@ -125,3 +161,43 @@ In default, this tool does not overwrite directories and files when output direc
 
 ### '-keep'
 You can keep intermediate files when specifying this option.
+
+
+
+# 5. preparing virus genome reference file
+
+###  prepare virus genome reference file
+This tool requires a virus reference genome. This file can be downloaded from NCBI.
+Here is the instruction to prepare the virus reference genome file.
+
+```
+wget ftp://ftp.ncbi.nlm.nih.gov/refseq/release/viral/viral.1.1.genomic.fna.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/refseq/release/viral/viral.2.1.genomic.fna.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/refseq/release/viral/viral.3.1.genomic.fna.gz
+zcat viral.*.1.genomic.fna.gz > viral_genomic_seq.fa
+
+# Check whether the 'viral_genomic_seq.fa' file contains HHV-6A and HHV-6B sequence.
+# This should output two header lines (HHV-6A and HHV-6B). Otherwise, you cannot use this file for this analysis.
+cat viral_genomic_seq.fa | grep -e NC_001664.4 -e NC_000898.1
+```
+Please specify 'viral_genomic_seq.fa' with '-vref' option.
+
+### prepare hisat2 index
+When you use hisat2 for mapping (default), you need to make hisat2 index of the virus genome reference file.
+
+```
+mkdir hisat2_index
+hisat2-build -p [num_thread] viral_genomic_seq.fa ./hisat2_index/viral_genomic_seq
+```
+Please specify './hisat2_index/viral_genomic_seq' with '-vrefindex' option.
+
+### prepare bwa index
+When you use BWA MEM for mapping ('-bwa' option), you need to make bwa index of the virus genome reference file.
+
+```
+mkdir bwa_index
+bwa index -p ./bwa_index/viral_genomic_seq -a bwtsw viral_genomic_seq.fa
+```
+Please specify './bwa_index/viral_genomic_seq' with '-vrefindex' option.
+
+
