@@ -11,18 +11,18 @@ import os,sys,datetime,argparse,glob,logging
 
 '''
 # hisat2
-python main.py -overwrite -alignmentin -c test_data/NA18999.final.cram -fa /home/kooojiii/Documents/genomes/hg38/1kGP/GRCh38_full_analysis_set_plus_decoy_hla.fa -vref /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/viral_genomic_200405.fa -vrefindex /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/bwa_index/viral_genomic_200405 -picard /home/kooojiii/bin/picard.jar -keep -p 4
+python main.py -overwrite -alignmentin -c test_data/NA18999.final.cram -fa /home/kooojiii/Documents/genomes/hg38/1kGP/GRCh38_full_analysis_set_plus_decoy_hla.fa -vref /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/viral_genomic_200405.fa -vrefindex /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/hisat2_index/viral_genomic_200405 -picard /home/kooojiii/bin/picard.jar -keep -p 4
 
-python main.py -overwrite -unmappedin -1 ./test_data/unmapped_merged_1.fq -2 ./test_data/unmapped_merged_2.fq -fa /home/kooojiii/Documents/genomes/hg38/1kGP/GRCh38_full_analysis_set_plus_decoy_hla.fa -vref /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/viral_genomic_200405.fa -vrefindex /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/bwa_index/viral_genomic_200405 -picard /home/kooojiii/bin/picard.jar -keep -p 4
+python main.py -overwrite -fastqin -fq1 ./test_data/unmapped_merged_1.fq -fq2 ./test_data/unmapped_merged_2.fq -fa /home/kooojiii/Documents/genomes/hg38/1kGP/GRCh38_full_analysis_set_plus_decoy_hla.fa -vref /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/viral_genomic_200405.fa -vrefindex /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/hisat2_index/viral_genomic_200405 -picard /home/kooojiii/bin/picard.jar -keep -p 4
 
 # bwa
-python main.py -overwrite -alignmentin -bwa -c test_data/NA18999.final.cram -fa /home/kooojiii/Documents/genomes/hg38/1kGP/GRCh38_full_analysis_set_plus_decoy_hla.fa -vref /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/viral_genomic_200405.fa -vrefindex /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/hisat2_index/viral_genomic_200405 -picard /home/kooojiii/bin/picard.jar -keep -p 5
+python main.py -overwrite -alignmentin -bwa -c test_data/NA18999.final.cram -fa /home/kooojiii/Documents/genomes/hg38/1kGP/GRCh38_full_analysis_set_plus_decoy_hla.fa -vref /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/viral_genomic_200405.fa -vrefindex /home/kooojiii/Documents/NCBI_database/all_viral_genome_nt/200406_1/bwa_index/viral_genomic_200405 -picard /home/kooojiii/bin/picard.jar -keep -p 5
 
 '''
 
 
 # version
-version='2020/04/27'
+version='2020/04/28'
 
 
 # HHV-6 refseq IDs
@@ -43,6 +43,7 @@ parser.add_argument('-fa', metavar='str', type=str, help='Required. Specify refe
 parser.add_argument('-bwa', help='Optional. Specify if you use BWA for mapping instead of hisat2.', action='store_true')
 parser.add_argument('-vref', metavar='str', type=str, help='Required. Specify reference of virus genomes, including HHV-6A and B. Example: viral_genomic_200405.fa')
 parser.add_argument('-vrefindex', metavar='str', type=str, help='Required. Specify hisat2 index of virus genomes, including HHV-6A and B. Example: viral_genomic_200405')
+parser.add_argument('-denovo', help='Optional. Specify if you want to perform de-novo assembly.', action='store_true')
 parser.add_argument('-picard', metavar='str', type=str, help='Required. Specify full path to picard.jar. Example: /path/to/picard/picard.jar')
 parser.add_argument('-outdir', metavar='str', type=str, help='Optional. Specify output directory. Default: ./result_out', default='./result_out')
 parser.add_argument('-overwrite', help='Optional. Specify if you overwrite previous results.', action='store_true')
@@ -67,7 +68,7 @@ log.logger.debug('Logging started.')
 
 # initial check
 import initial_check
-log.logger.debug('This is version %s' % version)
+log.logger.info('You are using version "%s"' % version)
 print()
 log.logger.info('Initial check started.')
 initial_check.check(args, sys.argv)
@@ -91,18 +92,21 @@ filenames.unmapped_3          =os.path.join(args.outdir, 'unmapped_3.fq')
 filenames.unmapped_4          =os.path.join(args.outdir, 'unmapped_4.fq')
 filenames.unmapped_5          =os.path.join(args.outdir, 'unmapped_5.fq')
 filenames.unmapped_6          =os.path.join(args.outdir, 'unmapped_6.fq')
-filenames.unmapped_7          =os.path.join(args.outdir, 'unmapped_7.fq')
-filenames.unmapped_8          =os.path.join(args.outdir, 'unmapped_8.fq')
 filenames.unmapped_merged_1   =os.path.join(args.outdir, 'unmapped_merged_1.fq')
 filenames.unmapped_merged_2   =os.path.join(args.outdir, 'unmapped_merged_2.fq')
-filenames.low_mapq_bam        =os.path.join(args.outdir, 'low_mapq.bam')
-filenames.mapped_unsorted_bam =os.path.join(args.outdir, 'mapped_to_virus.bam')
-filenames.mapped_to_virus_bam =os.path.join(args.outdir, 'mapped_to_virus_sorted.bam')
-filenames.mapped_to_virus_bai =os.path.join(args.outdir, 'mapped_to_virus_sorted.bai')
+filenames.mapped_unsorted_bam =os.path.join(args.outdir, 'mapped_to_virus_orig.bam')
+filenames.mapped_sorted       =os.path.join(args.outdir, 'mapped_to_virus_sorted.bam')
+filenames.mapped_to_virus_bam =os.path.join(args.outdir, 'mapped_to_virus_dedup.bam')
+filenames.mapped_to_virus_bai =os.path.join(args.outdir, 'mapped_to_virus_dedup.bai')
+filenames.markdup_metrix      =os.path.join(args.outdir, 'mark_duplicate_metrix.txt')
 filenames.bedgraph            =os.path.join(args.outdir, 'mapped_to_virus.bedgraph')
+filenames.summary             =os.path.join(args.outdir, 'virus_detection_summary.txt')
 filenames.high_cov_pdf        =os.path.join(args.outdir, 'high_coverage_viruses.pdf')
 
 filenames.tmp_bam             =os.path.join(args.outdir, 'tmp.bam')
+filenames.tmp_sorted_bam      =os.path.join(args.outdir, 'tmp_sorted.bam')
+filenames.tmp_bam_fq1         =os.path.join(args.outdir, 'tmp_bam_1.fq')
+filenames.tmp_bam_fq2         =os.path.join(args.outdir, 'tmp_bam_2.fq')
 filenames.tmp_rg_bam          =os.path.join(args.outdir, 'tmp_rg.bam')
 filenames.tmp_fa              =os.path.join(args.outdir, 'tmp.fa')
 filenames.tmp_masked_fa       =os.path.join(args.outdir, 'tmp_masked.fa')
@@ -110,7 +114,11 @@ filenames.tmp_fa_dict         =os.path.join(args.outdir, 'tmp.dict')
 filenames.hhv6a_vcf_gz        =os.path.join(args.outdir, 'hhv6a.vcf.gz')
 filenames.hhv6a_norm_vcf_gz   =os.path.join(args.outdir, 'hhv6a_norm.vcf.gz')
 filenames.hhv6a_gatk_naive    =os.path.join(args.outdir, 'hhv6a_reconstructed.fa')
-
+filenames.hhv6b_vcf_gz        =os.path.join(args.outdir, 'hhv6b.vcf.gz')
+filenames.hhv6b_norm_vcf_gz   =os.path.join(args.outdir, 'hhv6b_norm.vcf.gz')
+filenames.hhv6b_gatk_naive    =os.path.join(args.outdir, 'hhv6b_reconstructed.fa')
+filenames.hhv6a_metaspades_o  =os.path.join(args.outdir, 'hhv6a_metaspades_assembly')
+filenames.hhv6b_metaspades_o  =os.path.join(args.outdir, 'hhv6b_metaspades_assembly')
 
 # 0. Unmapped read retrieval
 if args.alignmentin is True:
@@ -125,12 +133,12 @@ elif args.fastqin is True:
 # 1. mapping
 import mapping
 log.logger.info('Mapping of unmapped reads started.')
-mapping.map_to_viruses(args, filenames)
+mapping.map_to_viruses(args, params, filenames)
 if args.alignmentin is True:
     utils.gzip_or_del(args, params, filenames.unmapped_merged_1)
     utils.gzip_or_del(args, params, filenames.unmapped_merged_2)
 log.logger.info('BAM to bedgraph conversion started.')
-mapping.bam_to_bedgraph(args, params, filenames)
+#mapping.bam_to_bedgraph(args, params, filenames)
 
 # 2. identify high coverage viruses
 import identify_high_cov
@@ -141,5 +149,11 @@ identify_high_cov.identify_high_cov_virus_from_bedgraph(args, params, filenames)
 import reconstruct_hhv6
 if identify_high_cov.hhv6a_highcov is True:
     log.logger.info('HHV-6A sequence reconstruction started.')
-    reconstruct_hhv6.pileup(args, params, filenames, hhv6a_refid)
+    reconstruct_hhv6.reconst_a(args, params, filenames, hhv6a_refid)
+if identify_high_cov.hhv6b_highcov is True:
+    log.logger.info('HHV-6B sequence reconstruction started.')
+    reconstruct_hhv6.reconst_b(args, params, filenames, hhv6b_refid)
+if args.keep is False:
+    os.remove(filenames.mapped_to_virus_bai)
 
+log.logger.info('All analysis finished!')

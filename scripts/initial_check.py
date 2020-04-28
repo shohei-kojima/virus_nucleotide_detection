@@ -59,6 +59,10 @@ def check(args, argv):
             if which('hisat2') is None:
                 log.logger.error('hisat2 not found in $PATH. Please check hisat2 is installed and added to PATH.')
                 exit(1)
+        if args.denovo is True:
+            if which('metaspades.py') is None:
+                log.logger.error('metaspades.py not found in $PATH. Please check metaspades.py is installed and added to PATH.')
+                exit(1)
         if os.path.exists(args.picard) is False:
             log.logger.error('%s not found. Please check %s is installed.' % (args.picard, args.picard))
             exit(1)
