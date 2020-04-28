@@ -183,6 +183,12 @@ In default, this tool does not overwrite directories and files when output direc
 ### '-keep'
 You can keep intermediate files when specifying this option.
 
+### '-v', '--version'
+Print version.
+
+### '-h', '--help'
+Print help message.
+
 
 
 # 5. preparing virus genome reference file

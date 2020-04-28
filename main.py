@@ -38,12 +38,13 @@ parser.add_argument('-outdir', metavar='str', type=str, help='Optional. Specify 
 parser.add_argument('-overwrite', help='Optional. Specify if you overwrite previous results.', action='store_true')
 parser.add_argument('-keep', help='Optional. Specify if you do not want to delete temporary files.', action='store_true')
 parser.add_argument('-p', metavar='int', type=int, help='Optional. Number of threads. 3 or more is recommended. Default: 2', default=2)
+parser.add_argument('-v', '--version', help='Print version.', action='store_true')
 args=parser.parse_args()
 
 
 # start
 import init
-init.init(args)
+init.init(args, version)
 
 
 # logging
