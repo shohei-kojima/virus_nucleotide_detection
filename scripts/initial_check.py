@@ -68,7 +68,6 @@ def check(args, argv):
             exit(1)
 
         # check prerequisite modules
-        from Bio.Seq import Seq
         import gzip
         import matplotlib
         import pysam

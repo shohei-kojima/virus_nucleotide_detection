@@ -3,11 +3,28 @@
 
 
 # 0. prerequisites
+### required softwares for running with default setting
+- Python 3.7 or later
+- pysam 0.15.2 or later
+- matplotlib 3.1.1 or later
+
+- hisat2 2.1.0 or later 
+- samtools 1.9 or later
+- bcftools 1.9 or later
+- bamCoverage 3.3.1 or later (deeptools 3.3.1 or later)
+- gatk 4.1.7.0 or later
+- picard 2.21.9 or later
+
+### optional prerequisites
+- bwa 0.7.17 or later (if you specify '-bwa' option)
+- SPAdes genome assembler v3.13.1 or later (if you specify '-denovo' option)
+
+### required Python built-in modules
+os,sys,datetime,multiprocessing,logging,traceback,argparse,glob,pylab,subprocess,gzip
 
 
 
-
-# 1. download this tool from GitHub
+# 1. download this tool from GitHub (currently not public)
 git clone https://github.com/shohei-kojima/iciHHV6_reconstruction
 
 
@@ -176,8 +193,10 @@ wget ftp://ftp.ncbi.nlm.nih.gov/refseq/release/viral/viral.2.1.genomic.fna.gz
 wget ftp://ftp.ncbi.nlm.nih.gov/refseq/release/viral/viral.3.1.genomic.fna.gz
 zcat viral.*.1.genomic.fna.gz > viral_genomic_seq.fa
 
-# Check whether the 'viral_genomic_seq.fa' file contains HHV-6A and HHV-6B sequence.
-# This should output two header lines (HHV-6A and HHV-6B). Otherwise, you cannot use this file for this analysis.
+# Validate the 'viral_genomic_seq.fa' file.
+# This file should output two header lines (below). Otherwise, you cannot use this file for this analysis.
+# >NC_000898.1 Human herpesvirus 6B, complete genome
+# >NC_001664.4 Human betaherpesvirus 6A, variant A DNA, complete virion genome, isolate U1102
 cat viral_genomic_seq.fa | grep -e NC_001664.4 -e NC_000898.1
 ```
 Please specify 'viral_genomic_seq.fa' with '-vref' option.
