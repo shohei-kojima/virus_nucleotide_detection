@@ -4,6 +4,8 @@
 
 # 0. prerequisites
 ### required softwares for running with default setting
+- Linux (recommended: Ubuntu 18.04)
+
 - Python 3.7 or later
 - pysam 0.15.2 or later
 - matplotlib 3.1.1 or later
