@@ -41,6 +41,7 @@ def map_to_viruses(args, params, filenames):
         out=subprocess.run(cmd, shell=True, stderr=subprocess.PIPE)
         log.logger.debug('\n'+ '\n'.join([ l.decode() for l in out.stderr.splitlines() ]))
         if not out.returncode == 0:
+            log.logger.error('\n'+ traceback.format_exc())
             log.logger.error('Error occurred during gatk running.')
             exit(1)
         # remove unnecessary files
@@ -63,6 +64,7 @@ def bam_to_bedgraph(args, params, filenames):
         out=subprocess.run(cmd, shell=True, stderr=subprocess.PIPE)
         log.logger.debug('\n'+ '\n'.join([ l.decode() for l in out.stderr.splitlines() ]))
         if not out.returncode == 0:
+            log.logger.error('\n'+ traceback.format_exc())
             log.logger.error('Error occurred during bamCoverage.')
             exit(1)
     except:
