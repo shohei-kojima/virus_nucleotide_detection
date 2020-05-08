@@ -141,12 +141,12 @@ identify_high_cov.identify_high_cov_virus_from_bedgraph(args, params, filenames)
 
 # 3. reconstruct HHV-6
 import reconstruct_hhv6
-#if identify_high_cov.hhv6a_highcov is True:
-#    log.logger.info('HHV-6A sequence reconstruction started.')
-#    reconstruct_hhv6.reconst_a(args, params, filenames, hhv6a_refid)
-#if identify_high_cov.hhv6b_highcov is True:
-#    log.logger.info('HHV-6B sequence reconstruction started.')
-#    reconstruct_hhv6.reconst_b(args, params, filenames, hhv6b_refid)
+if identify_high_cov.hhv6a_highcov is True:
+    log.logger.info('HHV-6A sequence reconstruction started.')
+    reconstruct_hhv6.reconst_a(args, params, filenames, hhv6a_refid)
+if identify_high_cov.hhv6b_highcov is True:
+    log.logger.info('HHV-6B sequence reconstruction started.')
+    reconstruct_hhv6.reconst_b(args, params, filenames, hhv6b_refid)
 if args.keep is False:
     os.remove(filenames.mapped_to_virus_bai)
 
