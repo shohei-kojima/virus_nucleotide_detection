@@ -110,12 +110,13 @@ def check(args, argv):
             elif os.path.exists(args.fq1) is False:
                 log.logger.error('Unmapped file (%s) was not found.' % args.fq1)
                 exit(1)
-            if args.fq2 is None:
-                log.logger.error('Please specify unmapped file.')
-                exit(1)
-            elif os.path.exists(args.fq2) is False:
-                log.logger.error('Unmapped file (%s) was not found.' % args.fq2)
-                exit(1)
+            if args.single is False:
+                if args.fq2 is None:
+                    log.logger.error('Please specify unmapped file.')
+                    exit(1)
+                elif os.path.exists(args.fq2) is False:
+                    log.logger.error('Unmapped file (%s) was not found.' % args.fq2)
+                    exit(1)
             if args.all_discordant is True:
                 log.logger.info('"-all_discordant" option is only available when "-alignmentin" option was specified. Will ignore this and proceed anyway.')
 
