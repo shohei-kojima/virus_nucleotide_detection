@@ -7,6 +7,7 @@ See file LICENSE for details.
 '''
 
 
+import os
 import log,traceback
 import matplotlib
 import matplotlib.pyplot as plt
