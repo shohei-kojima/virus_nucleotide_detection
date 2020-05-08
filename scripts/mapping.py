@@ -22,7 +22,7 @@ def map_to_viruses(args, params, filenames):
         if args.bwa is True:
             cmd='bwa mem -Y -t %d %s %s %s | samtools view -Sbh -o %s -' % (thread_n, args.vrefindex, filenames.unmapped_merged_1, filenames.unmapped_merged_2, filenames.mapped_unsorted_bam)
         elif args.fastqin is True and args.single is True:
-            cmd='hisat2 --mp %s -t -x %s -p %d -U %s --no-spliced-alignment | samtools view -Sbh -o %s -' % (params.hisat2_mismatch_penalties, args.vrefindex, thread_n, filenames.unmapped_merged_1, filenames.mapped_unsorted_bam)
+            cmd='hisat2 --mp %s -t -x %s -p %d -U -f %s --no-spliced-alignment | samtools view -Sbh -o %s -' % (params.hisat2_mismatch_penalties, args.vrefindex, thread_n, filenames.unmapped_merged_1, filenames.mapped_unsorted_bam)
         else:
             cmd='hisat2 --mp %s -t -x %s -p %d -1 %s -2 %s --no-spliced-alignment | samtools view -Sbh -o %s -' % (params.hisat2_mismatch_penalties, args.vrefindex, thread_n, filenames.unmapped_merged_1, filenames.unmapped_merged_2, filenames.mapped_unsorted_bam)
         log.logger.debug('mapping command = `'+ cmd +'`')
