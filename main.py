@@ -27,6 +27,7 @@ parser.add_argument('-c', metavar='str', type=str, help='Either -b or -c is Requ
 parser.add_argument('-fa', metavar='str', type=str, help='Required. Specify reference genome which are used when input reads were mapped. Example: GRCh38DH.fa')
 parser.add_argument('-all_discordant', help='Optional. Specify if you use all discordant reads from BAM/CRAM file for mapping to viruses. Otherwise, only unmapped reads will be used (default).', action='store_true')
 parser.add_argument('-fastqin', help='Optional. Specify if you use unmapped reads for input instead of BAM/CRAM file. You also need to specify -fq1 and -fq2.', action='store_true')
+parser.add_argument('-single', help='Optional. Specify if you use single-end unmapped reads for input instead of BAM/CRAM file. Only works when specifing -fastqin option. You also need to specify -fq1.', action='store_true')
 parser.add_argument('-fq1', metavar='str', type=str, help='Specify unmapped fastq file, read-1 of read pairs.')
 parser.add_argument('-fq2', metavar='str', type=str, help='Specify unmapped fastq file, read-2 of read pairs.')
 parser.add_argument('-vref', metavar='str', type=str, help='Required. Specify reference of virus genomes, including HHV-6A and B. Example: viral_genomic_200405.fa')
@@ -117,8 +118,11 @@ if args.alignmentin is True:
     retrieve_unmapped.retrieve_unmapped_reads(args, params, filenames)
 elif args.fastqin is True:
     log.logger.info('Unmapped read retrieval skipped. Read1=%s, read2=%s.' % (args.fq1, args.fq2))
-    filenames.unmapped_merged_1=args.fq1
-    filenames.unmapped_merged_2=args.fq2
+    if args.single is False:
+        filenames.unmapped_merged_1=args.fq1
+        filenames.unmapped_merged_2=args.fq2
+    else:
+        filenames.unmapped_merged_1=args.fq1
 
 # 1. mapping
 import mapping
