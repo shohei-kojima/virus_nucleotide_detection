@@ -101,7 +101,7 @@ def identify_high_cov_virus_from_bedgraph(args, params, filenames):
         # plot
         if len(for_plot_d) >= 1:
             if args.alignmentin is True:
-                sample_name=os.path.basename(args.b) if args.b is True else os.path.basename(args.c)
+                sample_name=os.path.basename(args.b) if not args.b is None else os.path.basename(args.c)
             else:
                 sample_name=os.path.basename(args.fq1)
             if len(for_plot_d) > 20:
