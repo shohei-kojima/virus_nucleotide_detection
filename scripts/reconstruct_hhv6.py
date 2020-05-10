@@ -66,7 +66,7 @@ def reconst_a(args, params, filenames, refseqid):
         pysam.view(filenames.mapped_to_virus_bam, '-h', '-o', filenames.tmp_bam, refseqid, catch_stdout=False)
         _,seq=utils.retrieve_only_one_virus_fasta(args.vref, refseqid)
         with open(filenames.tmp_fa, 'w') as outfile:
-            outfile.write('>reconst_%s_%s\n%s\n' % (refseqid, sample_name, seq))
+            outfile.write('>%s %s\n%s\n' % (refseqid, sample_name, seq))
         pysam.faidx(filenames.tmp_fa)
         
         # mask low depth regions
