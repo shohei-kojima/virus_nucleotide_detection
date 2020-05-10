@@ -35,6 +35,7 @@ def identify_high_cov_virus_from_bedgraph(args, params, filenames):
         prev_id='any'
         high_cov=[]
         for_plot_d={}
+        for_plot_cov=[]
         tmp_retain=[]
         with open(filenames.summary, 'w') as outfile:
             with open(filenames.bedgraph) as infile:
@@ -57,6 +58,7 @@ def identify_high_cov_virus_from_bedgraph(args, params, filenames):
                                     if ave_depth_norm >= params.ave_depth_of_mapped_region_threshold:
                                         high_cov.append([prev_id, genome_covered, ave_depth_norm])
                                         for_plot_d[prev_id]=tmp_retain
+                                        for_plot_cov.append([ave_depth, prev_id])
                                         high_cov_judge='True'
                             else:
                                 ave_depth_norm=0
@@ -82,6 +84,7 @@ def identify_high_cov_virus_from_bedgraph(args, params, filenames):
                     if ave_depth_norm >= params.ave_depth_of_mapped_region_threshold:
                         high_cov.append([prev_id, genome_covered, ave_depth_norm])
                         for_plot_d[prev_id]=tmp_retain
+                        for_plot_cov.append([ave_depth, prev_id])
                         high_cov_judge='True'
             else:
                 ave_depth_norm=0
@@ -94,18 +97,28 @@ def identify_high_cov_virus_from_bedgraph(args, params, filenames):
         high_cov_set=set([ l[0] for l in high_cov ])
         hhv6a_highcov=True if 'NC_001664.4' in high_cov_set else False
         hhv6b_highcov=True if 'NC_000898.1' in high_cov_set else False
-
+        
+        # plot
         if len(for_plot_d) >= 1:
             if args.alignmentin is True:
                 sample_name=os.path.basename(args.b) if args.b is True else os.path.basename(args.c)
             else:
                 sample_name=os.path.basename(args.fq1)
+            if len(for_plot_d) > 20:
+                for_plot_cov=[ l[1] for l in sorted(for_plot_cov, reverse=True)[:20] ]
+                for_plot_cov=set(for_plot_cov)
+                for_plot_d_limited={}
+                for id in for_plot_d:
+                    if id in for_plot_cov:
+                        for_plot_d_limited[id]=for_plot_d[id]
+            else:
+                for_plot_d_limited=for_plot_d
             # plot all high cov viruses
-            plt.figure(figsize=(5, len(for_plot_d)+1))
-            gs=gridspec.GridSpec(len(for_plot_d), 1, height_ratios=[ 1 for i in range(len(for_plot_d)) ])
-            nums=[ n for n in range(len(for_plot_d)) ]
-            labels=[ id +':'+ virus_names[id] for id in for_plot_d ]
-            data=[ for_plot_d[id] for id in for_plot_d ]
+            plt.figure(figsize=(5, len(for_plot_d_limited)+1))
+            gs=gridspec.GridSpec(len(for_plot_d_limited), 1, height_ratios=[ 1 for i in range(len(for_plot_d_limited)) ])
+            nums=[ n for n in range(len(for_plot_d_limited)) ]
+            labels=[ id +':'+ virus_names[id] for id in for_plot_d_limited ]
+            data=[ for_plot_d_limited[id] for id in for_plot_d_limited ]
             for dat,n,la in zip(data, nums, labels):
                 ax=plt.subplot(gs[n])
                 x,y,zero=[],[],[]
