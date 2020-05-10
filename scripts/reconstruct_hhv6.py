@@ -60,7 +60,7 @@ def reconst_a(args, params, filenames, refseqid):
         elif args.p >= 3:
             thread_n=args.p - 1
         if args.alignmentin is True:
-            sample_name=os.path.basename(args.b) if args.b is True else os.path.basename(args.c)
+            sample_name=os.path.basename(args.b) if not args.b is None else os.path.basename(args.c)
         else:
             sample_name=os.path.basename(args.fq1)
         pysam.view(filenames.mapped_to_virus_bam, '-h', '-o', filenames.tmp_bam, refseqid, catch_stdout=False)
