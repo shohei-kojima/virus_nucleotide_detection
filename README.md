@@ -159,7 +159,10 @@ By default, only unmapped reads for mapping to viruses when BAM or CRAM file is 
 Specify when you use fastq files as inputs. You also need to specify your input file with '-fq1' or '-fq2' options.
 
 ### '-fq1 [read_1 fastq file] -fq2 [read_2 fastq file]'
-Use when specifing fastq file. Available only when '-unmappedin' is also specified.
+Use when specifing paired fastq files. Available only when '-unmappedin' is also specified.
+
+### '-single -fq [fastq file]'
+Use when specifying single-end fastq file. Available only when '-unmappedin' is also specified.
 
 ### '-vref [reference virus genome file]'
 Use when specifing reference virus genome file available from NCBI. This option is always required. See 'preparing virus genome reference file' section for detail.
