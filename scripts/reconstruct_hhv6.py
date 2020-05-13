@@ -156,10 +156,14 @@ def reconst_b(args, params, filenames, refseqid):
             thread_n=args.p
         elif args.p >= 3:
             thread_n=args.p - 1
+        if args.alignmentin is True:
+            sample_name=os.path.basename(args.b) if not args.b is None else os.path.basename(args.c)
+        else:
+            sample_name=os.path.basename(args.fq1)
         pysam.view(filenames.mapped_to_virus_bam, '-h', '-o', filenames.tmp_bam, refseqid, catch_stdout=False)
-        header,seq=utils.retrieve_only_one_virus_fasta(args.vref, refseqid)
+        _,seq=utils.retrieve_only_one_virus_fasta(args.vref, refseqid)
         with open(filenames.tmp_fa, 'w') as outfile:
-            outfile.write('>%s\n%s\n' % (header, seq))
+            outfile.write('>%s %s\n%s\n' % (refseqid, sample_name, seq))
         pysam.faidx(filenames.tmp_fa)
         
         # mask low depth regions
