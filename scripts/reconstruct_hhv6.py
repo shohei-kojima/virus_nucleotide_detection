@@ -88,7 +88,8 @@ def reconst_a(args, params, filenames, refseqid):
         if not out.returncode == 0:
             log.logger.error('Error occurred during gatk running.')
             exit(1)
-        pysam.index('-@', str(thread_n), filenames.tmp_rg_bam)
+#        pysam.index('-@', str(thread_n), filenames.tmp_rg_bam)
+        pysam.index(filenames.tmp_rg_bam)
         cmd='gatk --java-options "-Xmx4g" HaplotypeCaller -R %s -I %s -O %s' % (filenames.tmp_fa, filenames.tmp_rg_bam, filenames.hhv6a_vcf_gz)
         log.logger.debug('gatk command = `'+ cmd +'`')
         out=subprocess.run(cmd, shell=True, stderr=subprocess.PIPE)
@@ -185,7 +186,8 @@ def reconst_b(args, params, filenames, refseqid):
         if not out.returncode == 0:
             log.logger.error('Error occurred during gatk running.')
             exit(1)
-        pysam.index('-@', str(thread_n), filenames.tmp_rg_bam)
+#        pysam.index('-@', str(thread_n), filenames.tmp_rg_bam)
+        pysam.index(filenames.tmp_rg_bam)
         cmd='gatk --java-options "-Xmx4g" HaplotypeCaller -R %s -I %s -O %s' % (filenames.tmp_fa, filenames.tmp_rg_bam, filenames.hhv6b_vcf_gz)
         log.logger.debug('gatk command = `'+ cmd +'`')
         out=subprocess.run(cmd, shell=True, stderr=subprocess.PIPE)
