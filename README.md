@@ -97,7 +97,7 @@ python main.py \
 -picard /path/to/picard.jar \
 -p 4
 ```
-'-denovo' option performs de novo assembly of HHV-6 sequence, in addition to variant call and consensus sequence generation. 
+'-denovo' option performs de novo assembly of viral sequence, in addition to variant call and consensus sequence generation. 
 
 
 
@@ -115,14 +115,14 @@ This is one of the main result files for most users. This contains read coverage
     - average_depth_of_mapped_region: Average of mapped read depth of mapped regions (average of only mapped regions)
 - 4th column: attribution of fasta header
 
-### 'hhv6a_reconstructed.fa', 'hhv6b_reconstructed.fa'
-This is one of the main result files for most users. This file contains HHV-6 sequence reconstructed with called variants. This tool outputs this file only when your sample contained either HHV-6A or HHV-6B. Genomic regions where do not have any reads (= 0 read mapped) are masked by a character 'N.'
+### 'refseqid_reconstructed.fa'
+This is one of the main result files for most users. This file contains viral sequence reconstructed with called variants. This tool outputs this file only when your sample contained one or more viruses with high read depth. Genomic regions where do not have any reads (= 0 read mapped) are masked by a character 'N.'
 
 ### 'high_coverage_viruses.pdf'
 This is one of the main result files for most users. If there is one or more viruses in your sample, this tool outputs read coverage of those viruses.
 
-### 'hhv6a.vcf.gz', 'hhv6b.vcf.gz'
-This is one of the main result files for most users. This file contains variant calls. This tool outputs this file only when your sample contained either HHV-6A or HHV-6B.
+### 'refseqid.vcf.gz'
+This is one of the main result files for most users. This file contains variant calls. This tool outputs this file only when your sample contained one or more viruses with high read depth.
 
 ### 'mapped_to_virus_dedup.bam'
 BAM file containing alignment with virus genomes.
@@ -133,8 +133,8 @@ Read depth of virus genomes.
 ### 'mark_duplicate_metrix.txt'
 Summary of picard MarkDuplicates running with 'mapped_to_virus_dedup.bam.'
 
-### 'hhv6a_metaspades_assembly', 'hhv6b_metaspades_assembly'
-This file contains HHV-6 sequence reconstructed by metaspades. This tool outputs this file only when your sample contained either HHV-6A or HHV-6B. You need to specify '-denovo' option to obtain this result.
+### 'refseqid_metaspades_assembly'
+This file contains viral sequence reconstructed by metaspades. This tool outputs this file only when your sample contained one or more viruses with high read depth. You need to specify '-denovo' option to obtain this result.
 
 ### 'for_debug.log'
 Log file. Stores all information, including input arguments and parameter setting.
@@ -207,12 +207,6 @@ wget ftp://ftp.ncbi.nlm.nih.gov/refseq/release/viral/viral.1.1.genomic.fna.gz
 wget ftp://ftp.ncbi.nlm.nih.gov/refseq/release/viral/viral.2.1.genomic.fna.gz
 wget ftp://ftp.ncbi.nlm.nih.gov/refseq/release/viral/viral.3.1.genomic.fna.gz
 zcat viral.*.1.genomic.fna.gz > viral_genomic_seq.fa
-
-# Validate the 'viral_genomic_seq.fa' file.
-# This file should output two header lines (below). Otherwise, you cannot use this file for this analysis.
-# >NC_000898.1 Human herpesvirus 6B, complete genome
-# >NC_001664.4 Human betaherpesvirus 6A, variant A DNA, complete virion genome, isolate U1102
-cat viral_genomic_seq.fa | grep -e NC_001664.4 -e NC_000898.1
 ```
 Please specify 'viral_genomic_seq.fa' with '-vref' option.
 
@@ -235,3 +229,28 @@ bwa index -p ./bwa_index/viral_genomic_seq -a bwtsw viral_genomic_seq.fa
 Please specify './bwa_index/viral_genomic_seq' with '-vrefindex' option.
 
 
+
+# Option. Prepare read depth of autosomes when using a WGS sample.
+Before using this script, you need to run 'samtools coverage' to calculate depth of each chromosome. You need to use samtools 1.10 or later to use 'coverage' function. The output from 'samtools coverage' contains mean depth of each chromosome. This program takes the output file from 'samtools coverage' to calculate mean depth of autosomes. You can specify the output file with '-i' option. You can specify names of autosomes by specifying a file containing names of autosomes with -chr option. When you did not specify a file with '-chr' option, this script will use '/path/to/prog/lib/human_autosomes_ucsc_stype.txt' by default.
+```
+samtools coverage --reference ref.fa in.cram > in.txt
+python calc_mapping_depth.py -i in.txt -chr /path/to/prog/lib/human_autosomes_ucsc_stype.txt -o out.txt
+```
+The output file 'out.txt' contains one line with 3 columns. 
+- 1st column: average depth of autosomes
+- 2nd column: Absolute path of 'in.txt'
+- 3rd column: names of the autosomes found in 'in.txt'
+
+You can specify the number in the 1st column with -depth option of the main program.
+```
+autosome_depth=`cat out.txt | cut -f 1`
+
+python main.py \
+-depth ${autosome_depth} \
+-alignmentin \
+-b test.bam \
+-vref /path/to/viral_genomic_seq.fa \
+-vrefindex /path/to/viral_genomic_seq_hisat2_index \
+-picard /path/to/picard.jar \
+-p 4
+```

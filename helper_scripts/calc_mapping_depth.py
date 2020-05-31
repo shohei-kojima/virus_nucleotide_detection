@@ -15,7 +15,7 @@ samtools coverage --reference ref.fa in.cram > in.txt
 python calc_mapping_depth.py -i in.txt -chr /path/to/prog/lib/human_autosomes_ucsc_stype.txt -o out.txt
 
 Usage details:
-Before using this script, you need to run 'samtools coverage' to calculate depth of each chromosome. You need to use samtools 1.10 or later to use 'coverage' function. The output from 'samtools coverage' contains mean depth of each chromosome. This program takes the output file from 'samtools coverage' to calculate mean depth of autosomes. You can specify the output file with '-i' option.
+Before using this script, you need to run 'samtools coverage' to calculate depth of each chromosome. You need to use samtools 1.10 or later to use 'coverage' function. The output from 'samtools coverage' contains mean depth of each chromosome. This program takes the output file from 'samtools coverage' to calculate mean depth of autosomes. You can specify the output file with '-i' option. You can specify names of autosomes by specifying a file containing names of autosomes with -chr option.
 
 Show help message:
 python calc_mapping_depth.py -h
