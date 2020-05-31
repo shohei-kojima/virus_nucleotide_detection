@@ -109,6 +109,7 @@ def identify_high_cov_virus_from_bedgraph(args, params, filenames):
         if len(high_cov) >= 1:
             log.logger.info('high_cov_virus=%s' % ';'.join([ l[0] for l in high_cov ]))
         global high_cov_ids
+        high_cov_ids=[]
         high_cov_set=set([ l[0] for l in high_cov ])
         for id in high_cov_set:
             vname=virus_names[id]
