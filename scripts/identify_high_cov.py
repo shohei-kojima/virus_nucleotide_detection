@@ -92,11 +92,14 @@ def identify_high_cov_virus_from_bedgraph(args, params, filenames):
             outfile.write('%s\tvirus_exist=%s\tgenome_length=%d;mapped_length=%d;perc_genome_mapped=%f;average_depth=%f;average_depth_of_mapped_region=%f\tfasta_header=%s\n' % (prev_id, high_cov_judge, total_len, cov_len, 100 * genome_covered, ave_depth, ave_depth_norm, virus_names[prev_id]))
         if len(high_cov) >= 1:
             log.logger.info('high_cov_virus=%s' % ';'.join([ l[0] for l in high_cov ]))
-        global hhv6a_highcov
-        global hhv6b_highcov
+        global high_cov_ids
         high_cov_set=set([ l[0] for l in high_cov ])
-        hhv6a_highcov=True if 'NC_001664.4' in high_cov_set else False
-        hhv6b_highcov=True if 'NC_000898.1' in high_cov_set else False
+        for id in high_cov_set:
+            vname=virus_names[id]
+            if not 'phage' in vname and not 'Phage' in vname:
+                high_cov_ids.append(id)
+            elif args.phage is True:
+                high_cov_ids.append(id)
         
         # plot
         if len(for_plot_d) >= 1:

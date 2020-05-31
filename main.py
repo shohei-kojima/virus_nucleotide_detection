@@ -11,12 +11,7 @@ import os,sys,datetime,argparse,glob,logging
 
 
 # version
-version='2020/05/10'
-
-
-# HHV-6 refseq IDs
-hhv6a_refid='NC_001664.4'
-hhv6b_refid='NC_000898.1'
+version='2020/05/31'
 
 
 # args
@@ -32,6 +27,8 @@ parser.add_argument('-fq1', metavar='str', type=str, help='Specify unmapped fast
 parser.add_argument('-fq2', metavar='str', type=str, help='Specify unmapped fastq file, read-2 of read pairs.')
 parser.add_argument('-vref', metavar='str', type=str, help='Required. Specify reference of virus genomes, including HHV-6A and B. Example: viral_genomic_200405.fa')
 parser.add_argument('-vrefindex', metavar='str', type=str, help='Required. Specify hisat2 index of virus genomes, including HHV-6A and B. Example: viral_genomic_200405')
+parser.add_argument('-depth', metavar='int', type=int, help='Optional. Average depth of input BAM/CRAM file. Only available when using WGS data. If this option is true, will output virus_read_depth/chromosome_depth as well.')
+parser.add_argument('-phage', help='Optional. Specify if you reconstruct phase as well. Default: False', action='store_true')
 parser.add_argument('-bwa', help='Optional. Specify if you use BWA for mapping instead of hisat2.', action='store_true')
 parser.add_argument('-denovo', help='Optional. Specify if you want to perform de-novo assembly.', action='store_true')
 parser.add_argument('-picard', metavar='str', type=str, help='Required. Specify full path to picard.jar. Example: /path/to/picard/picard.jar')
@@ -105,11 +102,7 @@ filenames.tmp_fa_dict         =os.path.join(args.outdir, 'tmp.dict')
 filenames.hhv6a_vcf_gz        =os.path.join(args.outdir, 'hhv6a.vcf.gz')
 filenames.hhv6a_norm_vcf_gz   =os.path.join(args.outdir, 'hhv6a_norm.vcf.gz')
 filenames.hhv6a_gatk_naive    =os.path.join(args.outdir, 'hhv6a_reconstructed.fa')
-filenames.hhv6b_vcf_gz        =os.path.join(args.outdir, 'hhv6b.vcf.gz')
-filenames.hhv6b_norm_vcf_gz   =os.path.join(args.outdir, 'hhv6b_norm.vcf.gz')
-filenames.hhv6b_gatk_naive    =os.path.join(args.outdir, 'hhv6b_reconstructed.fa')
 filenames.hhv6a_metaspades_o  =os.path.join(args.outdir, 'hhv6a_metaspades_assembly')
-filenames.hhv6b_metaspades_o  =os.path.join(args.outdir, 'hhv6b_metaspades_assembly')
 
 # 0. Unmapped read retrieval
 if args.alignmentin is True:
@@ -140,13 +133,10 @@ log.logger.info('Identification of high-coverage viruses started.')
 identify_high_cov.identify_high_cov_virus_from_bedgraph(args, params, filenames)
 
 # 3. reconstruct HHV-6
-import reconstruct_hhv6
-if identify_high_cov.hhv6a_highcov is True:
-    log.logger.info('HHV-6A sequence reconstruction started.')
-    reconstruct_hhv6.reconst_a(args, params, filenames, hhv6a_refid)
-if identify_high_cov.hhv6b_highcov is True:
-    log.logger.info('HHV-6B sequence reconstruction started.')
-    reconstruct_hhv6.reconst_b(args, params, filenames, hhv6b_refid)
+import reconstruct_virus_genome
+if len(identify_high_cov.high_cov_ids) >= 1:
+    log.logger.info('Virus reconstruction started, num_reconstruction = %d' % len(identify_high_cov.high_cov_ids))
+    reconstruct_virus_genome.reconst_any(args, params, filenames, identify_high_cov.high_cov_ids)
 if args.keep is False:
     os.remove(filenames.mapped_to_virus_bai)
 
