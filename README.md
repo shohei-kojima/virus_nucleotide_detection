@@ -1,4 +1,4 @@
-# This is a README file for iciHHV6_reconstruction_pipeline
+# This is a virus detection and reconstruction pipeline
 
 
 
@@ -28,7 +28,7 @@ os,sys,datetime,multiprocessing,logging,traceback,argparse,glob,pylab,subprocess
 
 
 # 1. download this tool from GitHub (currently not public)
-git clone https://github.com/shohei-kojima/iciHHV6_reconstruction
+git clone https://github.com/shohei-kojima/virus_nucleotide_detection
 
 
 
