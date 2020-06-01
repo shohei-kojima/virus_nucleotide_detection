@@ -67,7 +67,7 @@ def identify_high_cov_virus_from_bedgraph(args, params, filenames):
                             else:
                                 ave_depth_norm=0
                                 if args.depth is not None:
-                                    ratio_ave_virus_depth_to_autosome_depth= 0
+                                    ratio_ave_virus_depth_to_autosome_depth='0'
                                 else:
                                     ratio_ave_virus_depth_to_autosome_depth='NA'
                                 high_cov_judge='False'
@@ -101,7 +101,7 @@ def identify_high_cov_virus_from_bedgraph(args, params, filenames):
             else:
                 ave_depth_norm=0
                 if args.depth is not None:
-                    ratio_ave_virus_depth_to_autosome_depth= 0
+                    ratio_ave_virus_depth_to_autosome_depth='0'
                 else:
                     ratio_ave_virus_depth_to_autosome_depth='NA'
                 high_cov_judge='False'
