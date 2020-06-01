@@ -1,5 +1,7 @@
 # This is a virus detection and reconstruction pipeline
 
+# Flowchart
+<img src='https://github.com/shohei-kojima/virus_nucleotide_detection/blob/master/lib/image_for_readme.png' width='320px'>
 
 
 # 0. prerequisites
@@ -113,6 +115,7 @@ This is one of the main result files for most users. This contains read coverage
     - perc_genome_mapped: Percent of virus genome with one or more reads
     - average_depth: Average of mapped read depth (average of whole genome)
     - average_depth_of_mapped_region: Average of mapped read depth of mapped regions (average of only mapped regions)
+    - ratio_ave_virus_depth_to_autosome_depth: Average of mapped read depth of mapped regions devided by autosome depth provided with '-depth' option. Available only when '-depth' option was specified. Otherwise, 'NA'.
 - 4th column: attribution of fasta header
 
 ### 'refseqid_reconstructed.fa'
@@ -155,20 +158,26 @@ Use when specifing CRAM file. Available only when '-alignmentin' is also specifi
 Specify when you use all discordant reads from BAM or CRAM file.
 By default, only unmapped reads for mapping to viruses when BAM or CRAM file is specified as an input. If you want to use all discordant reads (e.g. reads without sam flag '2') for mapping to viruses, you can specify '-all_discordant' option. The discordant reads includes read-pairs with distant mapped positions and ones with low MAPQ; therefore, the number of discordant reads are far higher than unmapped reads. This option is only available when '-alignmentin' option was specified. Although this option is less accurate than default setting (= use only unmapped reads), the coverage of reconstructed sequence is longer than default. Please use this at your own risk.
 
-### '-unmappedin'
+### '-fastqin'
 Specify when you use fastq files as inputs. You also need to specify your input file with '-fq1' or '-fq2' options.
 
 ### '-fq1 [read_1 fastq file] -fq2 [read_2 fastq file]'
-Use when specifing paired fastq files. Available only when '-unmappedin' is also specified.
+Use when specifing paired fastq files. Available only when '-fastqin' is also specified.
 
 ### '-single -fq [fastq file]'
-Use when specifying single-end fastq file. Available only when '-unmappedin' is also specified.
+Use when specifying single-end fastq file. Available only when '-fastqin' is also specified.
 
 ### '-vref [reference virus genome file]'
 Use when specifing reference virus genome file available from NCBI. This option is always required. See 'preparing virus genome reference file' section for detail.
 
 ### '-vrefindex [index of reference virus genome file]'
 Use when specifing reference virus genome index. This option is always required. See 'preparing virus genome reference file' section for detail.
+
+### '-depth'
+When you are using WGS data, you can specify autosome depth with this option. When specified, this pipeline output (average_depth_of_mapped_region / autosome depth). This is particularly important when juding a detected virus sequence is inherited chromosomally integrated sequence or not.
+
+### '-phage'
+When specified, this pipeline also reconstructs phage sequences. Generally, there are lots of phage-derived sequences (incld. spike-in PhiX). By default, this pipeline does not reconstruct when a virus genome name contained the word 'phage' or 'Phage'.
 
 ### '-picard [picard.jar file]'
 Use when specifing the path to 'picard.jar' file. This option is always required. 
