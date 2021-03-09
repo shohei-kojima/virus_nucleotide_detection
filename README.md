@@ -1,3 +1,12 @@
+# About this repo
+
+- This is a virus detection pipeline used in Kojima et al 2021.
+- We no longer update this pipeline for future use. If you use this, please use at your own risk.
+- We keep updating another pipeline, integrated HHV-6 reconstruction pipeline. Please also consider using this.
+- -> https://github.com/shohei-kojima/integrated_HHV6_recon
+
+########################################
+
 # This is a virus detection and reconstruction pipeline
 
 # Flowchart
