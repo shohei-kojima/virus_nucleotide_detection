@@ -63,10 +63,13 @@ def check(args, argv):
             if which('metaspades.py') is None:
                 log.logger.error('metaspades.py not found in $PATH. Please check metaspades.py is installed and added to PATH.')
                 exit(1)
-        if os.path.exists(args.picard) is False:
-            log.logger.error('%s not found. Please check %s is installed.' % (args.picard, args.picard))
+        if args.singularity is True:
+            if args.picard is None:
+                args.picard='/usr/local/bin/picard.jar'
+        if args.picard is None:
+            log.logger.error('Please specify path to picard.jar with `-picard` flag.')
             exit(1)
-
+        
         # check prerequisite modules
         import gzip
         import matplotlib
